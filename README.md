@@ -12,6 +12,20 @@ cp example.env .env  # add your GOOGLE_API_KEY
 streamlit run src/app.py
 ```
 
+### Editable install (`pip install -e .`)
+
+If you prefer an editable install so local changes are immediately reflected, create a virtual environment and install the
+package in development mode:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -e .
+cp example.env .env  # add your GOOGLE_API_KEY
+streamlit run src/app.py
+```
+
 On first launch the app will build a FAISS index from the bundled recipe dataset automatically. Use the sidebar button to rebuild the index if you add new data.
 
 ### Rebuilding the FAISS index manually
