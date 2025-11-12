@@ -12,6 +12,11 @@ cp example.env .env  # add your GOOGLE_API_KEY
 streamlit run src/app.py
 ```
 
+> **Python 3.12 tip:** The `requirements.txt` pins `faiss-cpu==1.7.4.post2` for Python 3.12+. If you are on Windows and pip reports
+> `No matching distribution` you can install from [conda-forge](https://conda-forge.org/) or run the project inside WSL where
+> prebuilt wheels are available. NutriTrackAI will gracefully fall back to the bundled similarity search if FAISS is truly
+> unavailable.
+
 ### Editable install (`pip install -e .`)
 
 If you prefer an editable install so local changes are immediately reflected, create a virtual environment and install the
