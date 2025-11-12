@@ -5,10 +5,9 @@ NutriTrackAI is a Streamlit-based nutrition assistant that combines Gemini Pro, 
 ## Quickstart
 
 ```bash
-python3 -m venv .venv
+python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-cp example.env .env  # add your GOOGLE_API_KEY
 streamlit run src/app.py
 ```
 
