@@ -1,0 +1,1712 @@
+{
+  "apple": {
+    "calories": 52,
+    "protein_g": 0.3,
+    "carb_g": 14,
+    "fat_g": 0.2
+  },
+  "banana": {
+    "calories": 89,
+    "protein_g": 1.1,
+    "carb_g": 23,
+    "fat_g": 0.3
+  },
+  "blueberries": {
+    "calories": 57,
+    "protein_g": 0.7,
+    "carb_g": 14.5,
+    "fat_g": 0.3
+  },
+  "chicken breast": {
+    "calories": 165,
+    "protein_g": 31,
+    "carb_g": 0,
+    "fat_g": 3.6
+  },
+  "salmon": {
+    "calories": 208,
+    "protein_g": 20,
+    "carb_g": 0,
+    "fat_g": 13
+  },
+  "tofu": {
+    "calories": 76,
+    "protein_g": 8,
+    "carb_g": 1.9,
+    "fat_g": 4.8
+  },
+  "lentils": {
+    "calories": 116,
+    "protein_g": 9,
+    "carb_g": 20,
+    "fat_g": 0.4
+  },
+  "black beans": {
+    "calories": 132,
+    "protein_g": 8.9,
+    "carb_g": 23.7,
+    "fat_g": 0.5
+  },
+  "chickpeas": {
+    "calories": 164,
+    "protein_g": 8.9,
+    "carb_g": 27.4,
+    "fat_g": 2.6
+  },
+  "quinoa": {
+    "calories": 120,
+    "protein_g": 4.4,
+    "carb_g": 21.3,
+    "fat_g": 1.9
+  },
+  "brown rice": {
+    "calories": 123,
+    "protein_g": 2.7,
+    "carb_g": 25.6,
+    "fat_g": 1
+  },
+  "sweet potato": {
+    "calories": 86,
+    "protein_g": 1.6,
+    "carb_g": 20.1,
+    "fat_g": 0.1
+  },
+  "spinach": {
+    "calories": 23,
+    "protein_g": 2.9,
+    "carb_g": 3.6,
+    "fat_g": 0.4
+  },
+  "kale": {
+    "calories": 49,
+    "protein_g": 4.3,
+    "carb_g": 8.8,
+    "fat_g": 0.9
+  },
+  "broccoli": {
+    "calories": 55,
+    "protein_g": 3.7,
+    "carb_g": 11.1,
+    "fat_g": 0.6
+  },
+  "cauliflower": {
+    "calories": 25,
+    "protein_g": 1.9,
+    "carb_g": 5,
+    "fat_g": 0.3
+  },
+  "bell pepper": {
+    "calories": 31,
+    "protein_g": 1,
+    "carb_g": 6,
+    "fat_g": 0.3
+  },
+  "tomato": {
+    "calories": 18,
+    "protein_g": 0.9,
+    "carb_g": 3.9,
+    "fat_g": 0.2
+  },
+  "avocado": {
+    "calories": 160,
+    "protein_g": 2,
+    "carb_g": 8.5,
+    "fat_g": 14.7
+  },
+  "olive oil": {
+    "calories": 884,
+    "protein_g": 0,
+    "carb_g": 0,
+    "fat_g": 100
+  },
+  "almonds": {
+    "calories": 579,
+    "protein_g": 21.2,
+    "carb_g": 21.7,
+    "fat_g": 49.9
+  },
+  "walnuts": {
+    "calories": 654,
+    "protein_g": 15.2,
+    "carb_g": 13.7,
+    "fat_g": 65.2
+  },
+  "chia seeds": {
+    "calories": 486,
+    "protein_g": 16.5,
+    "carb_g": 42.1,
+    "fat_g": 30.7
+  },
+  "flax seeds": {
+    "calories": 534,
+    "protein_g": 18.3,
+    "carb_g": 28.9,
+    "fat_g": 42.2
+  },
+  "honey": {
+    "calories": 304,
+    "protein_g": 0.3,
+    "carb_g": 82.4,
+    "fat_g": 0
+  },
+  "maple syrup": {
+    "calories": 260,
+    "protein_g": 0,
+    "carb_g": 67,
+    "fat_g": 0
+  },
+  "greek yogurt": {
+    "calories": 97,
+    "protein_g": 10,
+    "carb_g": 3.6,
+    "fat_g": 4.4
+  },
+  "cottage cheese": {
+    "calories": 98,
+    "protein_g": 11.1,
+    "carb_g": 3.4,
+    "fat_g": 4.3
+  },
+  "eggs": {
+    "calories": 143,
+    "protein_g": 12.6,
+    "carb_g": 0.7,
+    "fat_g": 9.5
+  },
+  "egg whites": {
+    "calories": 52,
+    "protein_g": 11,
+    "carb_g": 0.7,
+    "fat_g": 0.2
+  },
+  "egg yolks": {
+    "calories": 322,
+    "protein_g": 15.9,
+    "carb_g": 3.6,
+    "fat_g": 26.5
+  },
+  "whole milk": {
+    "calories": 61,
+    "protein_g": 3.2,
+    "carb_g": 4.8,
+    "fat_g": 3.3
+  },
+  "almond milk": {
+    "calories": 15,
+    "protein_g": 0.6,
+    "carb_g": 1.3,
+    "fat_g": 1.2
+  },
+  "oat milk": {
+    "calories": 43,
+    "protein_g": 1,
+    "carb_g": 6.7,
+    "fat_g": 1.4
+  },
+  "soy milk": {
+    "calories": 54,
+    "protein_g": 3.3,
+    "carb_g": 6.3,
+    "fat_g": 1.8
+  },
+  "cheddar cheese": {
+    "calories": 403,
+    "protein_g": 24.9,
+    "carb_g": 1.3,
+    "fat_g": 33.1
+  },
+  "parmesan": {
+    "calories": 431,
+    "protein_g": 38,
+    "carb_g": 4.1,
+    "fat_g": 29
+  },
+  "feta": {
+    "calories": 264,
+    "protein_g": 14.2,
+    "carb_g": 4.1,
+    "fat_g": 21.3
+  },
+  "goat cheese": {
+    "calories": 364,
+    "protein_g": 21.6,
+    "carb_g": 0.1,
+    "fat_g": 29.8
+  },
+  "mozzarella": {
+    "calories": 280,
+    "protein_g": 28,
+    "carb_g": 3,
+    "fat_g": 17
+  },
+  "tempeh": {
+    "calories": 192,
+    "protein_g": 20.3,
+    "carb_g": 7.6,
+    "fat_g": 10.8
+  },
+  "edamame": {
+    "calories": 121,
+    "protein_g": 11.9,
+    "carb_g": 8.9,
+    "fat_g": 5.2
+  },
+  "peanut butter": {
+    "calories": 588,
+    "protein_g": 25,
+    "carb_g": 20,
+    "fat_g": 50
+  },
+  "almond butter": {
+    "calories": 614,
+    "protein_g": 21,
+    "carb_g": 19,
+    "fat_g": 56
+  },
+  "tahini": {
+    "calories": 595,
+    "protein_g": 17,
+    "carb_g": 21,
+    "fat_g": 53
+  },
+  "cashews": {
+    "calories": 553,
+    "protein_g": 18,
+    "carb_g": 30,
+    "fat_g": 44
+  },
+  "pecans": {
+    "calories": 691,
+    "protein_g": 9.2,
+    "carb_g": 13.9,
+    "fat_g": 72
+  },
+  "pistachios": {
+    "calories": 562,
+    "protein_g": 20,
+    "carb_g": 28,
+    "fat_g": 45
+  },
+  "hazelnuts": {
+    "calories": 628,
+    "protein_g": 15,
+    "carb_g": 17,
+    "fat_g": 61
+  },
+  "pumpkin seeds": {
+    "calories": 559,
+    "protein_g": 30,
+    "carb_g": 10.7,
+    "fat_g": 49
+  },
+  "sunflower seeds": {
+    "calories": 584,
+    "protein_g": 20.8,
+    "carb_g": 20,
+    "fat_g": 51.5
+  },
+  "sesame seeds": {
+    "calories": 573,
+    "protein_g": 17.7,
+    "carb_g": 23.4,
+    "fat_g": 49.7
+  },
+  "basil pesto": {
+    "calories": 457,
+    "protein_g": 6,
+    "carb_g": 12,
+    "fat_g": 45
+  },
+  "balsamic vinegar": {
+    "calories": 88,
+    "protein_g": 0.5,
+    "carb_g": 17,
+    "fat_g": 0
+  },
+  "soy sauce": {
+    "calories": 53,
+    "protein_g": 8,
+    "carb_g": 4.9,
+    "fat_g": 0.1
+  },
+  "miso paste": {
+    "calories": 199,
+    "protein_g": 12,
+    "carb_g": 26,
+    "fat_g": 6
+  },
+  "ginger": {
+    "calories": 80,
+    "protein_g": 1.8,
+    "carb_g": 18,
+    "fat_g": 0.8
+  },
+  "garlic": {
+    "calories": 149,
+    "protein_g": 6.4,
+    "carb_g": 33,
+    "fat_g": 0.5
+  },
+  "onion": {
+    "calories": 40,
+    "protein_g": 1.1,
+    "carb_g": 9.3,
+    "fat_g": 0.1
+  },
+  "carrot": {
+    "calories": 41,
+    "protein_g": 0.9,
+    "carb_g": 9.6,
+    "fat_g": 0.2
+  },
+  "celery": {
+    "calories": 16,
+    "protein_g": 0.7,
+    "carb_g": 3,
+    "fat_g": 0.2
+  },
+  "cucumber": {
+    "calories": 15,
+    "protein_g": 0.7,
+    "carb_g": 3.6,
+    "fat_g": 0.1
+  },
+  "zucchini": {
+    "calories": 17,
+    "protein_g": 1.2,
+    "carb_g": 3.1,
+    "fat_g": 0.3
+  },
+  "eggplant": {
+    "calories": 25,
+    "protein_g": 1,
+    "carb_g": 6,
+    "fat_g": 0.2
+  },
+  "mushrooms": {
+    "calories": 22,
+    "protein_g": 3.1,
+    "carb_g": 3.3,
+    "fat_g": 0.3
+  },
+  "potato": {
+    "calories": 77,
+    "protein_g": 2,
+    "carb_g": 17,
+    "fat_g": 0.1
+  },
+  "butternut squash": {
+    "calories": 45,
+    "protein_g": 1,
+    "carb_g": 12,
+    "fat_g": 0.1
+  },
+  "beef flank steak": {
+    "calories": 192,
+    "protein_g": 27,
+    "carb_g": 0,
+    "fat_g": 8
+  },
+  "beef chuck": {
+    "calories": 250,
+    "protein_g": 26,
+    "carb_g": 0,
+    "fat_g": 17
+  },
+  "ground turkey": {
+    "calories": 169,
+    "protein_g": 22,
+    "carb_g": 0,
+    "fat_g": 8
+  },
+  "ground chicken": {
+    "calories": 173,
+    "protein_g": 23,
+    "carb_g": 0,
+    "fat_g": 8
+  },
+  "turkey meatballs": {
+    "calories": 220,
+    "protein_g": 20,
+    "carb_g": 5,
+    "fat_g": 12
+  },
+  "shrimp": {
+    "calories": 99,
+    "protein_g": 24,
+    "carb_g": 0.2,
+    "fat_g": 0.3
+  },
+  "cod": {
+    "calories": 82,
+    "protein_g": 18,
+    "carb_g": 0,
+    "fat_g": 0.7
+  },
+  "tuna": {
+    "calories": 132,
+    "protein_g": 29,
+    "carb_g": 0,
+    "fat_g": 1
+  },
+  "sardines": {
+    "calories": 208,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 11
+  },
+  "anchovies": {
+    "calories": 210,
+    "protein_g": 29,
+    "carb_g": 0,
+    "fat_g": 10
+  },
+  "scallops": {
+    "calories": 111,
+    "protein_g": 20,
+    "carb_g": 3.4,
+    "fat_g": 0.8
+  },
+  "brown eggs": {
+    "calories": 147,
+    "protein_g": 12.5,
+    "carb_g": 0.7,
+    "fat_g": 10.5
+  },
+  "whole wheat bread": {
+    "calories": 247,
+    "protein_g": 13,
+    "carb_g": 41,
+    "fat_g": 4
+  },
+  "sourdough bread": {
+    "calories": 289,
+    "protein_g": 11.4,
+    "carb_g": 57,
+    "fat_g": 2.5
+  },
+  "corn tortillas": {
+    "calories": 218,
+    "protein_g": 5.7,
+    "carb_g": 46,
+    "fat_g": 2.9
+  },
+  "whole wheat tortilla": {
+    "calories": 250,
+    "protein_g": 8,
+    "carb_g": 42,
+    "fat_g": 6
+  },
+  "rice noodles": {
+    "calories": 108,
+    "protein_g": 1.8,
+    "carb_g": 24.9,
+    "fat_g": 0.2
+  },
+  "soba noodles": {
+    "calories": 99,
+    "protein_g": 5,
+    "carb_g": 21,
+    "fat_g": 0.1
+  },
+  "whole wheat pasta": {
+    "calories": 348,
+    "protein_g": 13,
+    "carb_g": 74,
+    "fat_g": 2
+  },
+  "farro": {
+    "calories": 170,
+    "protein_g": 6,
+    "carb_g": 34,
+    "fat_g": 1.5
+  },
+  "oats": {
+    "calories": 389,
+    "protein_g": 16.9,
+    "carb_g": 66.3,
+    "fat_g": 6.9
+  },
+  "granola": {
+    "calories": 471,
+    "protein_g": 13,
+    "carb_g": 64,
+    "fat_g": 20
+  },
+  "brown sugar": {
+    "calories": 380,
+    "protein_g": 0,
+    "carb_g": 98,
+    "fat_g": 0
+  },
+  "maple sugar": {
+    "calories": 354,
+    "protein_g": 0,
+    "carb_g": 90,
+    "fat_g": 0
+  },
+  "quark": {
+    "calories": 67,
+    "protein_g": 12,
+    "carb_g": 3.5,
+    "fat_g": 0.3
+  },
+  "greek feta": {
+    "calories": 260,
+    "protein_g": 15,
+    "carb_g": 4,
+    "fat_g": 21
+  },
+  "plain yogurt": {
+    "calories": 59,
+    "protein_g": 10,
+    "carb_g": 3.6,
+    "fat_g": 0.4
+  },
+  "protein powder": {
+    "calories": 390,
+    "protein_g": 78,
+    "carb_g": 8,
+    "fat_g": 4
+  },
+  "whey protein": {
+    "calories": 400,
+    "protein_g": 80,
+    "carb_g": 10,
+    "fat_g": 5
+  },
+  "pea protein": {
+    "calories": 380,
+    "protein_g": 75,
+    "carb_g": 7,
+    "fat_g": 5
+  },
+  "hemp seeds": {
+    "calories": 553,
+    "protein_g": 31.6,
+    "carb_g": 8.7,
+    "fat_g": 48.8
+  },
+  "sun-dried tomatoes": {
+    "calories": 258,
+    "protein_g": 14,
+    "carb_g": 55,
+    "fat_g": 2.9
+  },
+  "canned tomatoes": {
+    "calories": 32,
+    "protein_g": 1.6,
+    "carb_g": 7,
+    "fat_g": 0.2
+  },
+  "tomato sauce": {
+    "calories": 29,
+    "protein_g": 1.4,
+    "carb_g": 7,
+    "fat_g": 0.2
+  },
+  "tomato paste": {
+    "calories": 82,
+    "protein_g": 4,
+    "carb_g": 18.9,
+    "fat_g": 0.5
+  },
+  "coconut milk": {
+    "calories": 230,
+    "protein_g": 2.3,
+    "carb_g": 6.4,
+    "fat_g": 24
+  },
+  "light coconut milk": {
+    "calories": 154,
+    "protein_g": 1.5,
+    "carb_g": 3.4,
+    "fat_g": 15
+  },
+  "coconut water": {
+    "calories": 19,
+    "protein_g": 0.7,
+    "carb_g": 3.7,
+    "fat_g": 0.2
+  },
+  "coconut oil": {
+    "calories": 892,
+    "protein_g": 0,
+    "carb_g": 0,
+    "fat_g": 100
+  },
+  "sesame oil": {
+    "calories": 884,
+    "protein_g": 0,
+    "carb_g": 0,
+    "fat_g": 100
+  },
+  "canola oil": {
+    "calories": 884,
+    "protein_g": 0,
+    "carb_g": 0,
+    "fat_g": 100
+  },
+  "butter": {
+    "calories": 717,
+    "protein_g": 0.9,
+    "carb_g": 0.1,
+    "fat_g": 81
+  },
+  "ghee": {
+    "calories": 900,
+    "protein_g": 0,
+    "carb_g": 0,
+    "fat_g": 100
+  },
+  "yogurt sauce": {
+    "calories": 120,
+    "protein_g": 5,
+    "carb_g": 5,
+    "fat_g": 9
+  },
+  "tzatziki": {
+    "calories": 110,
+    "protein_g": 6,
+    "carb_g": 5,
+    "fat_g": 8
+  },
+  "hummus": {
+    "calories": 166,
+    "protein_g": 8,
+    "carb_g": 14,
+    "fat_g": 10
+  },
+  "tahini sauce": {
+    "calories": 240,
+    "protein_g": 7,
+    "carb_g": 10,
+    "fat_g": 19
+  },
+  "caesar dressing": {
+    "calories": 480,
+    "protein_g": 4,
+    "carb_g": 6,
+    "fat_g": 50
+  },
+  "sesame dressing": {
+    "calories": 300,
+    "protein_g": 4,
+    "carb_g": 12,
+    "fat_g": 26
+  },
+  "teriyaki sauce": {
+    "calories": 89,
+    "protein_g": 1,
+    "carb_g": 16,
+    "fat_g": 0.2
+  },
+  "balsamic glaze": {
+    "calories": 198,
+    "protein_g": 0.4,
+    "carb_g": 49,
+    "fat_g": 0.2
+  },
+  "almond flour": {
+    "calories": 571,
+    "protein_g": 21,
+    "carb_g": 19,
+    "fat_g": 50
+  },
+  "coconut flour": {
+    "calories": 400,
+    "protein_g": 20,
+    "carb_g": 60,
+    "fat_g": 14
+  },
+  "whole wheat flour": {
+    "calories": 340,
+    "protein_g": 13,
+    "carb_g": 72,
+    "fat_g": 2.5
+  },
+  "brown rice flour": {
+    "calories": 363,
+    "protein_g": 7,
+    "carb_g": 76,
+    "fat_g": 2
+  },
+  "banana chips": {
+    "calories": 519,
+    "protein_g": 2.3,
+    "carb_g": 58,
+    "fat_g": 33
+  },
+  "raisins": {
+    "calories": 299,
+    "protein_g": 3.1,
+    "carb_g": 79,
+    "fat_g": 0.5
+  },
+  "cranberries dried": {
+    "calories": 325,
+    "protein_g": 0.1,
+    "carb_g": 83,
+    "fat_g": 1.4
+  },
+  "dates": {
+    "calories": 282,
+    "protein_g": 2.5,
+    "carb_g": 75,
+    "fat_g": 0.4
+  },
+  "figs": {
+    "calories": 249,
+    "protein_g": 3.3,
+    "carb_g": 63,
+    "fat_g": 0.9
+  },
+  "prunes": {
+    "calories": 240,
+    "protein_g": 2.2,
+    "carb_g": 64,
+    "fat_g": 0.4
+  },
+  "pineapple": {
+    "calories": 50,
+    "protein_g": 0.5,
+    "carb_g": 13,
+    "fat_g": 0.1
+  },
+  "mango": {
+    "calories": 60,
+    "protein_g": 0.8,
+    "carb_g": 15,
+    "fat_g": 0.4
+  },
+  "papaya": {
+    "calories": 43,
+    "protein_g": 0.5,
+    "carb_g": 11,
+    "fat_g": 0.3
+  },
+  "kiwi": {
+    "calories": 61,
+    "protein_g": 1.1,
+    "carb_g": 15,
+    "fat_g": 0.5
+  },
+  "strawberries": {
+    "calories": 33,
+    "protein_g": 0.7,
+    "carb_g": 8,
+    "fat_g": 0.3
+  },
+  "raspberries": {
+    "calories": 52,
+    "protein_g": 1.2,
+    "carb_g": 12,
+    "fat_g": 0.7
+  },
+  "blackberries": {
+    "calories": 43,
+    "protein_g": 1.4,
+    "carb_g": 10,
+    "fat_g": 0.5
+  },
+  "peach": {
+    "calories": 39,
+    "protein_g": 0.9,
+    "carb_g": 10,
+    "fat_g": 0.3
+  },
+  "nectarine": {
+    "calories": 44,
+    "protein_g": 1.1,
+    "carb_g": 11,
+    "fat_g": 0.3
+  },
+  "plum": {
+    "calories": 46,
+    "protein_g": 0.7,
+    "carb_g": 11,
+    "fat_g": 0.3
+  },
+  "pear": {
+    "calories": 57,
+    "protein_g": 0.4,
+    "carb_g": 15,
+    "fat_g": 0.1
+  },
+  "grapes": {
+    "calories": 69,
+    "protein_g": 0.7,
+    "carb_g": 18,
+    "fat_g": 0.2
+  },
+  "oranges": {
+    "calories": 47,
+    "protein_g": 0.9,
+    "carb_g": 12,
+    "fat_g": 0.1
+  },
+  "mandarin": {
+    "calories": 53,
+    "protein_g": 0.8,
+    "carb_g": 13.3,
+    "fat_g": 0.3
+  },
+  "lemon": {
+    "calories": 29,
+    "protein_g": 1.1,
+    "carb_g": 9.3,
+    "fat_g": 0.3
+  },
+  "lime": {
+    "calories": 30,
+    "protein_g": 0.7,
+    "carb_g": 10.5,
+    "fat_g": 0.2
+  },
+  "watermelon": {
+    "calories": 30,
+    "protein_g": 0.6,
+    "carb_g": 8,
+    "fat_g": 0.2
+  },
+  "cantaloupe": {
+    "calories": 34,
+    "protein_g": 0.8,
+    "carb_g": 8.2,
+    "fat_g": 0.2
+  },
+  "honeydew": {
+    "calories": 36,
+    "protein_g": 0.5,
+    "carb_g": 9,
+    "fat_g": 0.2
+  },
+  "cranberry": {
+    "calories": 46,
+    "protein_g": 0.4,
+    "carb_g": 12,
+    "fat_g": 0.1
+  },
+  "pomegranate": {
+    "calories": 83,
+    "protein_g": 1.7,
+    "carb_g": 19,
+    "fat_g": 1.2
+  },
+  "apple cider": {
+    "calories": 46,
+    "protein_g": 0,
+    "carb_g": 11,
+    "fat_g": 0
+  },
+  "salsa": {
+    "calories": 36,
+    "protein_g": 1.5,
+    "carb_g": 7,
+    "fat_g": 0.3
+  },
+  "guacamole": {
+    "calories": 160,
+    "protein_g": 2,
+    "carb_g": 9,
+    "fat_g": 14
+  },
+  "mustard": {
+    "calories": 66,
+    "protein_g": 4.4,
+    "carb_g": 5,
+    "fat_g": 3.3
+  },
+  "ketchup": {
+    "calories": 112,
+    "protein_g": 1.3,
+    "carb_g": 25,
+    "fat_g": 0.1
+  },
+  "bbq sauce": {
+    "calories": 150,
+    "protein_g": 1.4,
+    "carb_g": 38,
+    "fat_g": 0.4
+  },
+  "hot sauce": {
+    "calories": 28,
+    "protein_g": 1.4,
+    "carb_g": 7,
+    "fat_g": 0.5
+  },
+  "chili paste": {
+    "calories": 100,
+    "protein_g": 3,
+    "carb_g": 20,
+    "fat_g": 2
+  },
+  "sriracha": {
+    "calories": 101,
+    "protein_g": 1.3,
+    "carb_g": 23,
+    "fat_g": 0.7
+  },
+  "kimchi": {
+    "calories": 23,
+    "protein_g": 1.7,
+    "carb_g": 4,
+    "fat_g": 0.6
+  },
+  "sauerkraut": {
+    "calories": 19,
+    "protein_g": 1,
+    "carb_g": 4,
+    "fat_g": 0.1
+  },
+  "pickles": {
+    "calories": 12,
+    "protein_g": 0.5,
+    "carb_g": 2.3,
+    "fat_g": 0.3
+  },
+  "brown rice syrup": {
+    "calories": 316,
+    "protein_g": 0,
+    "carb_g": 81,
+    "fat_g": 0
+  },
+  "agave syrup": {
+    "calories": 310,
+    "protein_g": 0,
+    "carb_g": 76,
+    "fat_g": 0
+  },
+  "stevia": {
+    "calories": 0,
+    "protein_g": 0,
+    "carb_g": 0,
+    "fat_g": 0
+  },
+  "erythritol": {
+    "calories": 0,
+    "protein_g": 0,
+    "carb_g": 0,
+    "fat_g": 0
+  },
+  "monk fruit": {
+    "calories": 0,
+    "protein_g": 0,
+    "carb_g": 0,
+    "fat_g": 0
+  },
+  "cacao nibs": {
+    "calories": 500,
+    "protein_g": 13,
+    "carb_g": 30,
+    "fat_g": 43
+  },
+  "dark chocolate 70%": {
+    "calories": 598,
+    "protein_g": 7.8,
+    "carb_g": 46,
+    "fat_g": 43
+  },
+  "dark chocolate 85%": {
+    "calories": 605,
+    "protein_g": 9,
+    "carb_g": 29,
+    "fat_g": 49
+  },
+  "milk chocolate": {
+    "calories": 535,
+    "protein_g": 7.5,
+    "carb_g": 59,
+    "fat_g": 30
+  },
+  "white chocolate": {
+    "calories": 539,
+    "protein_g": 5.9,
+    "carb_g": 59,
+    "fat_g": 32
+  },
+  "protein bar": {
+    "calories": 360,
+    "protein_g": 30,
+    "carb_g": 35,
+    "fat_g": 12
+  },
+  "energy bar": {
+    "calories": 380,
+    "protein_g": 12,
+    "carb_g": 60,
+    "fat_g": 10
+  },
+  "granola bar": {
+    "calories": 450,
+    "protein_g": 10,
+    "carb_g": 65,
+    "fat_g": 15
+  },
+  "trail mix": {
+    "calories": 462,
+    "protein_g": 14,
+    "carb_g": 44,
+    "fat_g": 28
+  },
+  "beef broth": {
+    "calories": 13,
+    "protein_g": 2,
+    "carb_g": 1,
+    "fat_g": 0.4
+  },
+  "vegetable broth": {
+    "calories": 12,
+    "protein_g": 0.5,
+    "carb_g": 1.5,
+    "fat_g": 0.1
+  },
+  "chicken broth": {
+    "calories": 13,
+    "protein_g": 1.6,
+    "carb_g": 0.9,
+    "fat_g": 0.5
+  },
+  "bone broth": {
+    "calories": 35,
+    "protein_g": 7,
+    "carb_g": 0,
+    "fat_g": 0.2
+  },
+  "kombucha": {
+    "calories": 16,
+    "protein_g": 0.2,
+    "carb_g": 3.3,
+    "fat_g": 0.1
+  },
+  "green tea": {
+    "calories": 1,
+    "protein_g": 0,
+    "carb_g": 0.3,
+    "fat_g": 0
+  },
+  "black coffee": {
+    "calories": 2,
+    "protein_g": 0.3,
+    "carb_g": 0,
+    "fat_g": 0
+  },
+  "espresso": {
+    "calories": 9,
+    "protein_g": 1,
+    "carb_g": 1.7,
+    "fat_g": 0.2
+  },
+  "matcha": {
+    "calories": 324,
+    "protein_g": 30,
+    "carb_g": 38,
+    "fat_g": 5
+  },
+  "protein yogurt": {
+    "calories": 68,
+    "protein_g": 11,
+    "carb_g": 5,
+    "fat_g": 0.2
+  },
+  "smoked salmon": {
+    "calories": 117,
+    "protein_g": 18,
+    "carb_g": 0,
+    "fat_g": 4
+  },
+  "turkey bacon": {
+    "calories": 382,
+    "protein_g": 29,
+    "carb_g": 3,
+    "fat_g": 28
+  },
+  "beef jerky": {
+    "calories": 410,
+    "protein_g": 33,
+    "carb_g": 10,
+    "fat_g": 27
+  },
+  "pork tenderloin": {
+    "calories": 143,
+    "protein_g": 26,
+    "carb_g": 0,
+    "fat_g": 4
+  },
+  "pork loin": {
+    "calories": 196,
+    "protein_g": 27,
+    "carb_g": 0,
+    "fat_g": 9
+  },
+  "bacon": {
+    "calories": 541,
+    "protein_g": 37,
+    "carb_g": 1.4,
+    "fat_g": 42
+  },
+  "ham": {
+    "calories": 145,
+    "protein_g": 21,
+    "carb_g": 1.5,
+    "fat_g": 5
+  },
+  "prosciutto": {
+    "calories": 247,
+    "protein_g": 26,
+    "carb_g": 0,
+    "fat_g": 14
+  },
+  "tempeh bacon": {
+    "calories": 210,
+    "protein_g": 20,
+    "carb_g": 12,
+    "fat_g": 11
+  },
+  "seitan": {
+    "calories": 118,
+    "protein_g": 25,
+    "carb_g": 5.5,
+    "fat_g": 1.9
+  },
+  "jackfruit": {
+    "calories": 95,
+    "protein_g": 2,
+    "carb_g": 24,
+    "fat_g": 0.6
+  },
+  "mango chutney": {
+    "calories": 239,
+    "protein_g": 1,
+    "carb_g": 58,
+    "fat_g": 0.5
+  },
+  "tamarind paste": {
+    "calories": 239,
+    "protein_g": 2.8,
+    "carb_g": 62.5,
+    "fat_g": 0.6
+  },
+  "coconut sugar": {
+    "calories": 375,
+    "protein_g": 1,
+    "carb_g": 92,
+    "fat_g": 0
+  },
+  "molasses": {
+    "calories": 290,
+    "protein_g": 0,
+    "carb_g": 74,
+    "fat_g": 0.1
+  },
+  "barley": {
+    "calories": 360,
+    "protein_g": 12,
+    "carb_g": 75,
+    "fat_g": 2.5
+  },
+  "millet": {
+    "calories": 360,
+    "protein_g": 12,
+    "carb_g": 75,
+    "fat_g": 2.5
+  },
+  "amaranth": {
+    "calories": 360,
+    "protein_g": 12,
+    "carb_g": 75,
+    "fat_g": 2.5
+  },
+  "buckwheat": {
+    "calories": 360,
+    "protein_g": 12,
+    "carb_g": 75,
+    "fat_g": 2.5
+  },
+  "spelt": {
+    "calories": 360,
+    "protein_g": 12,
+    "carb_g": 75,
+    "fat_g": 2.5
+  },
+  "bulgur": {
+    "calories": 360,
+    "protein_g": 12,
+    "carb_g": 75,
+    "fat_g": 2.5
+  },
+  "teff": {
+    "calories": 360,
+    "protein_g": 12,
+    "carb_g": 75,
+    "fat_g": 2.5
+  },
+  "sorghum": {
+    "calories": 360,
+    "protein_g": 12,
+    "carb_g": 75,
+    "fat_g": 2.5
+  },
+  "arugula": {
+    "calories": 40,
+    "protein_g": 2,
+    "carb_g": 8,
+    "fat_g": 0.5
+  },
+  "romaine": {
+    "calories": 40,
+    "protein_g": 2,
+    "carb_g": 8,
+    "fat_g": 0.5
+  },
+  "mixed greens": {
+    "calories": 40,
+    "protein_g": 2,
+    "carb_g": 8,
+    "fat_g": 0.5
+  },
+  "bok choy": {
+    "calories": 40,
+    "protein_g": 2,
+    "carb_g": 8,
+    "fat_g": 0.5
+  },
+  "brussels sprouts": {
+    "calories": 40,
+    "protein_g": 2,
+    "carb_g": 8,
+    "fat_g": 0.5
+  },
+  "green beans": {
+    "calories": 40,
+    "protein_g": 2,
+    "carb_g": 8,
+    "fat_g": 0.5
+  },
+  "peas": {
+    "calories": 40,
+    "protein_g": 2,
+    "carb_g": 8,
+    "fat_g": 0.5
+  },
+  "corn": {
+    "calories": 40,
+    "protein_g": 2,
+    "carb_g": 8,
+    "fat_g": 0.5
+  },
+  "beets": {
+    "calories": 40,
+    "protein_g": 2,
+    "carb_g": 8,
+    "fat_g": 0.5
+  },
+  "radish": {
+    "calories": 40,
+    "protein_g": 2,
+    "carb_g": 8,
+    "fat_g": 0.5
+  },
+  "leeks": {
+    "calories": 40,
+    "protein_g": 2,
+    "carb_g": 8,
+    "fat_g": 0.5
+  },
+  "shallots": {
+    "calories": 40,
+    "protein_g": 2,
+    "carb_g": 8,
+    "fat_g": 0.5
+  },
+  "sweet corn": {
+    "calories": 40,
+    "protein_g": 2,
+    "carb_g": 8,
+    "fat_g": 0.5
+  },
+  "artichoke": {
+    "calories": 40,
+    "protein_g": 2,
+    "carb_g": 8,
+    "fat_g": 0.5
+  },
+  "apricot": {
+    "calories": 50,
+    "protein_g": 1,
+    "carb_g": 12,
+    "fat_g": 0.3
+  },
+  "blue plum": {
+    "calories": 50,
+    "protein_g": 1,
+    "carb_g": 12,
+    "fat_g": 0.3
+  },
+  "dragon fruit": {
+    "calories": 50,
+    "protein_g": 1,
+    "carb_g": 12,
+    "fat_g": 0.3
+  },
+  "starfruit": {
+    "calories": 50,
+    "protein_g": 1,
+    "carb_g": 12,
+    "fat_g": 0.3
+  },
+  "passion fruit": {
+    "calories": 50,
+    "protein_g": 1,
+    "carb_g": 12,
+    "fat_g": 0.3
+  },
+  "lychee": {
+    "calories": 50,
+    "protein_g": 1,
+    "carb_g": 12,
+    "fat_g": 0.3
+  },
+  "guava": {
+    "calories": 50,
+    "protein_g": 1,
+    "carb_g": 12,
+    "fat_g": 0.3
+  },
+  "persimmon": {
+    "calories": 50,
+    "protein_g": 1,
+    "carb_g": 12,
+    "fat_g": 0.3
+  },
+  "clementine": {
+    "calories": 50,
+    "protein_g": 1,
+    "carb_g": 12,
+    "fat_g": 0.3
+  },
+  "blood orange": {
+    "calories": 50,
+    "protein_g": 1,
+    "carb_g": 12,
+    "fat_g": 0.3
+  },
+  "grapefruit": {
+    "calories": 50,
+    "protein_g": 1,
+    "carb_g": 12,
+    "fat_g": 0.3
+  },
+  "elderberry": {
+    "calories": 50,
+    "protein_g": 1,
+    "carb_g": 12,
+    "fat_g": 0.3
+  },
+  "currant": {
+    "calories": 50,
+    "protein_g": 1,
+    "carb_g": 12,
+    "fat_g": 0.3
+  },
+  "cranberry fresh": {
+    "calories": 50,
+    "protein_g": 1,
+    "carb_g": 12,
+    "fat_g": 0.3
+  },
+  "seabass": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "tilapia": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "haddock": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "halibut": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "trout": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "mackerel": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "swordfish": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "lobster": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "crab": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "clams": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "mussels": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "octopus": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "squid": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "venison": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "bison": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "lamb loin": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "duck breast": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "quail": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "pheasant": {
+    "calories": 150,
+    "protein_g": 25,
+    "carb_g": 0,
+    "fat_g": 5
+  },
+  "black pepper": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "cumin": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "turmeric": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "paprika": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "oregano": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "thyme": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "rosemary": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "parsley": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "cilantro": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "dill": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "mint": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "curry powder": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "garam masala": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "five spice": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "nutmeg": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "cinnamon": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "cardamom": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "clove": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "allspice": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "vanilla extract": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "cocoa powder": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "baking powder": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "baking soda": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "yeast": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "agar agar": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "gelatin": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "cornstarch": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "arrowroot": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "tapioca starch": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  },
+  "xanthan gum": {
+    "calories": 250,
+    "protein_g": 10,
+    "carb_g": 50,
+    "fat_g": 5
+  }
+}

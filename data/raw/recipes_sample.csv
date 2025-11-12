@@ -1,0 +1,48 @@
+title,ingredients,steps,tags,per_serving_calories,protein_g,carb_g,fat_g,servings
+Greek Yogurt Parfait,"Greek yogurt|Honey|Granola|Blueberries","Layer yogurt with honey, top with granola and berries",breakfast;vegetarian;high-protein,220,18,28,6,1
+Avocado Toast,"Whole grain bread|Avocado|Cherry tomatoes|Olive oil","Toast bread, smash avocado, top with tomatoes and drizzle oil",breakfast;vegetarian,260,8,32,12,1
+Quinoa Salad,"Quinoa|Chickpeas|Cucumber|Tomatoes|Feta|Lemon juice","Cook quinoa, mix with other ingredients and dressing",lunch;vegetarian;high-protein,320,14,42,10,2
+Grilled Chicken Bowl,"Chicken breast|Brown rice|Broccoli|Carrots|Teriyaki sauce","Grill chicken, steam veggies, assemble bowl",lunch;high-protein,450,38,48,12,2
+Salmon with Asparagus,"Salmon|Asparagus|Lemon|Olive oil|Garlic","Roast salmon and asparagus with seasoning",dinner;high-protein,420,34,10,24,2
+Veggie Omelette,"Eggs|Spinach|Mushrooms|Bell pepper|Cheddar","Whisk eggs, cook veggies, fold omelette",breakfast;vegetarian;high-protein,280,20,6,18,1
+Lentil Soup,"Lentils|Carrots|Celery|Onion|Tomato paste|Vegetable broth","Simmer all ingredients until lentils are tender",lunch;vegetarian,310,18,44,6,4
+Tofu Stir-Fry,"Tofu|Snow peas|Bell pepper|Soy sauce|Garlic|Ginger","Stir-fry tofu and veggies with sauce",dinner;vegetarian;high-protein,360,22,32,14,2
+Turkey Chili,"Ground turkey|Kidney beans|Tomatoes|Onion|Chili powder","Simmer all ingredients until thick",dinner;high-protein,390,28,38,12,4
+Oatmeal Bowl,"Rolled oats|Almond milk|Banana|Chia seeds|Almond butter","Cook oats, add toppings",breakfast;vegetarian,340,11,48,12,1
+Shrimp Tacos,"Shrimp|Corn tortillas|Cabbage|Avocado|Lime|Yogurt sauce","Cook shrimp, assemble tacos",dinner;seafood,370,26,36,14,2
+Beef Stir-Fry,"Flank steak|Broccoli|Bell pepper|Soy sauce|Garlic|Sesame oil","Stir-fry beef and vegetables",dinner;high-protein,430,32,28,18,2
+Chickpea Curry,"Chickpeas|Coconut milk|Spinach|Curry paste|Brown rice","Simmer curry, serve over rice",dinner;vegetarian,480,16,62,18,4
+Berry Smoothie,"Frozen berries|Greek yogurt|Spinach|Chia seeds|Almond milk","Blend all ingredients until smooth",snack;vegetarian,210,12,28,6,1
+Stuffed Peppers,"Bell peppers|Ground turkey|Quinoa|Tomato sauce|Cheddar","Stuff peppers and bake",dinner;high-protein,400,30,34,14,4
+Pesto Pasta,"Whole wheat pasta|Basil pesto|Cherry tomatoes|Parmesan","Cook pasta, toss with pesto and tomatoes",lunch;vegetarian,420,16,52,14,3
+Miso Glazed Cod,"Cod|Miso paste|Ginger|Garlic|Bok choy","Bake cod with glaze, sauté bok choy",dinner;seafood;high-protein,360,30,18,12,2
+Black Bean Burrito,"Black beans|Brown rice|Whole wheat tortilla|Salsa|Avocado","Assemble burrito with fillings",lunch;vegetarian,410,16,58,12,2
+Protein Pancakes,"Oats|Eggs|Banana|Protein powder|Baking powder","Blend batter, cook pancakes",breakfast;high-protein,300,24,32,8,2
+Kale Caesar Salad,"Kale|Chicken breast|Parmesan|Whole grain croutons|Caesar dressing","Massage kale, top with chicken and dressing",lunch;high-protein,360,32,18,16,2
+Mediterranean Bowl,"Farro|Chicken|Hummus|Cucumber|Tomatoes|Olives","Cook farro, assemble bowl",lunch;high-protein,470,34,52,16,2
+Tofu Scramble,"Tofu|Turmeric|Spinach|Bell pepper|Nutritional yeast","Crumble tofu, cook with veggies",breakfast;vegetarian;high-protein,290,20,14,16,2
+Buddha Bowl,"Quinoa|Roasted sweet potato|Chickpeas|Avocado|Tahini","Assemble bowl with dressing",lunch;vegetarian,430,16,56,18,2
+Soba Noodle Salad,"Soba noodles|Edamame|Cabbage|Carrots|Sesame dressing","Cook noodles, toss with veggies",lunch;vegetarian,380,20,54,10,2
+Asian Salmon Salad,"Salmon|Mixed greens|Mandarin oranges|Almonds|Sesame dressing","Bake salmon, top salad",lunch;seafood,410,32,24,18,2
+Greek Chicken Wrap,"Chicken|Whole wheat wrap|Tzatziki|Lettuce|Tomato","Fill wrap with ingredients",lunch;high-protein,420,36,38,12,2
+Veggie Buddha Wrap,"Whole wheat wrap|Hummus|Roasted vegetables|Spinach","Assemble wrap",lunch;vegetarian,360,14,48,12,2
+Spicy Peanut Noodles,"Rice noodles|Peanut butter|Soy sauce|Chili paste|Carrots|Cucumber","Mix sauce, toss with noodles and veggies",dinner;vegetarian,450,18,62,16,2
+Hearty Beef Stew,"Beef chuck|Potatoes|Carrots|Celery|Beef broth","Slow cook until tender",dinner,480,34,38,18,4
+Zucchini Noodles Marinara,"Zucchini noodles|Marinara sauce|Turkey meatballs|Parmesan","Cook meatballs, heat sauce, toss with noodles",dinner;low-carb;high-protein,320,28,18,12,2
+Chia Pudding,"Chia seeds|Almond milk|Maple syrup|Strawberries","Mix ingredients, chill overnight",snack;vegetarian,240,8,28,12,2
+Thai Basil Chicken,"Ground chicken|Basil|Bell pepper|Garlic|Jasmine rice","Cook chicken with basil, serve with rice",dinner;high-protein,420,32,44,12,2
+Greek Lentil Bowl,"Lentils|Feta|Cucumber|Tomatoes|Olives|Lemon","Cook lentils, toss with veggies",lunch;vegetarian;high-protein,350,22,46,8,2
+Sweet Potato Hash,"Sweet potato|Eggs|Kale|Onion|Paprika","Cook potatoes, add kale and eggs",breakfast;vegetarian,360,18,38,14,2
+Teriyaki Tofu Bowl,"Tofu|Brown rice|Edamame|Broccoli|Teriyaki sauce","Bake tofu, assemble bowl",lunch;vegetarian;high-protein,390,24,48,12,2
+Garlic Shrimp Quinoa,"Shrimp|Quinoa|Spinach|Garlic|Lemon","Cook quinoa, sauté shrimp, combine",dinner;seafood;high-protein,380,28,36,10,2
+Berry Yogurt Bowl,"Greek yogurt|Strawberries|Almonds|Honey","Combine ingredients",breakfast;vegetarian,250,16,28,8,1
+Vegetable Frittata,"Eggs|Zucchini|Tomatoes|Goat cheese|Basil","Bake frittata",breakfast;vegetarian,300,18,10,20,4
+Spicy Black Bean Soup,"Black beans|Tomatoes|Onion|Cumin|Chili","Sauté aromatics, simmer with beans and spices",dinner;vegetarian,340,18,48,6,4
+Quinoa Breakfast Bowl,"Quinoa|Eggs|Spinach|Avocado|Salsa","Assemble cooked quinoa with toppings",breakfast;high-protein,310,20,34,12,1
+Veggie Sushi Rolls,"Nori|Sushi rice|Avocado|Cucumber|Carrot","Roll sushi with fillings and slice",lunch;vegetarian,320,8,56,8,4
+Lemon Herb Cod,"Cod|Lemon|Parsley|Garlic|Green beans","Bake cod with herbs, roast beans",dinner;seafood;high-protein,340,30,12,12,2
+Smoky Tempeh Tacos,"Tempeh|Corn tortillas|Cabbage|Chipotle sauce|Lime","Cook tempeh with spices, assemble tacos",dinner;vegetarian;high-protein,360,22,38,12,2
+Caprese Chicken,"Chicken breast|Tomatoes|Mozzarella|Basil|Balsamic glaze","Bake chicken, top with caprese ingredients",dinner;high-protein,390,36,14,16,2
+Moroccan Chickpea Stew,"Chickpeas|Sweet potato|Tomatoes|Spinach|Ras el hanout","Simmer stew until thick",dinner;vegetarian,370,18,58,8,4
+Sesame Ginger Salmon,"Salmon|Ginger|Soy sauce|Sesame oil|Brown rice","Bake salmon with sauce, serve with rice",dinner;seafood;high-protein,410,32,34,18,2
+Cottage Cheese Bowl,"Cottage cheese|Pineapple|Walnuts|Cinnamon","Combine ingredients",snack;vegetarian;high-protein,230,20,18,8,1
