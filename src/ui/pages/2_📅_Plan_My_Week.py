@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import streamlit as st
 
-from ...core.schemas import MacroTargets
-from ...tools.meal_planner import generate_plan
-from ...tools.grocery_list import build_list_from_plan
-from ..components import plan_table, targets_sidebar
+from core.schemas import MacroTargets
+from tools.meal_planner import generate_plan
+from tools.grocery_list import build_list_from_plan
+from ui.components import plan_table, targets_sidebar
 
 
 def main() -> None:

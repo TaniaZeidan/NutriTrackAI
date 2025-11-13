@@ -6,9 +6,9 @@ from datetime import date, timedelta
 from pathlib import Path
 from typing import Dict, List
 
-from ..core.schemas import MacroTargets, MealItem, PlanDay, PlanMeal
-from ..core.utils import clamp_calories
-from ..config import RAW_DATA_DIR
+from core.schemas import MacroTargets, MealItem, PlanDay, PlanMeal
+from core.utils import clamp_calories
+from config import RAW_DATA_DIR
 
 
 def _load_recipes() -> List[Dict[str, str]]:

@@ -10,7 +10,7 @@ except Exception:  # pragma: no cover
 
 import streamlit as st
 
-from ..core.schemas import MacroTargets, PlanDay
+from core.schemas import MacroTargets, PlanDay
 
 
 def macro_ring_chart(totals: Dict[str, float], targets: Dict[str, float] | None = None) -> None:

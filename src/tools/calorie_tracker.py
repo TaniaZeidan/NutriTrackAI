@@ -6,10 +6,10 @@ from datetime import date
 from functools import lru_cache
 from typing import Dict, List, Literal, Tuple
 
-from ..core.db import Database
-from ..core.schemas import Meal, MealItem
-from ..core.utils import normalize_unit
-from ..config import RAW_DATA_DIR
+from core.db import Database
+from core.schemas import Meal, MealItem
+from core.utils import normalize_unit
+from config import RAW_DATA_DIR
 
 
 @lru_cache(maxsize=1)

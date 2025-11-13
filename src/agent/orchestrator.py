@@ -13,9 +13,9 @@ except Exception:  # pragma: no cover
     ConversationBufferMemory = None  # type: ignore
     ChatGoogleGenerativeAI = None  # type: ignore
 
-from ..core.llm import GeminiClient
-from ..core.memory import ConversationMemory, PreferenceMemory
-from ..core.prompts import SYSTEM_PROMPT
+from core.llm import GeminiClient
+from core.memory import ConversationMemory, PreferenceMemory
+from core.prompts import SYSTEM_PROMPT
 
 
 class NutriTrackAgent:

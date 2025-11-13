@@ -11,7 +11,7 @@ try:  # pragma: no cover - optional import
 except Exception:  # pragma: no cover
     genai = None  # type: ignore
 
-from ..config import CHAT_MODEL, get_google_api_key
+from config import CHAT_MODEL, get_google_api_key
 
 
 class GeminiClient:

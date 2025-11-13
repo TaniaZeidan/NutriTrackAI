@@ -5,7 +5,7 @@ from datetime import date
 import pandas as pd
 import streamlit as st
 
-from ...core.db import Database
+from core.db import Database
 
 
 def main() -> None:

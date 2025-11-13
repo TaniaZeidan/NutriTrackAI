@@ -4,10 +4,10 @@ from datetime import date
 
 import streamlit as st
 
-from ...core.db import Database
-from ...core.utils import macro_totals
-from ...tools.calorie_tracker import log_meal
-from ..components import macro_ring_chart
+from core.db import Database
+from core.utils import macro_totals
+from tools.calorie_tracker import log_meal
+from ui.components import macro_ring_chart
 
 
 def main() -> None:

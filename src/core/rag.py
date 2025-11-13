@@ -4,8 +4,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import List
 
-from .embeddings import build_index, retrieve
-from .schemas import RecipeDocument
+from core.embeddings import build_index, retrieve
+from core.schemas import RecipeDocument
 
 
 @dataclass

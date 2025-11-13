@@ -3,9 +3,10 @@ from __future__ import annotations
 
 import streamlit as st
 
-from .core.rag import build_index
-from .tools.meal_planner import generate_plan
-from .core.schemas import MacroTargets
+from core.embeddings import build_index
+from core.rag import search_recipes
+from tools.meal_planner import generate_plan
+from core.schemas import MacroTargets
 
 
 st.set_page_config(page_title="NutriTrackAI", page_icon="🥗", layout="wide")

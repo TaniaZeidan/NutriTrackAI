@@ -16,7 +16,7 @@ try:  # pragma: no cover - optional dependency
 except Exception:  # pragma: no cover
     faiss = None  # type: ignore
 
-from ..config import FAISS_INDEX_DIR, RAW_DATA_DIR
+from config import FAISS_INDEX_DIR, RAW_DATA_DIR
 from .schemas import RecipeDocument
 
 

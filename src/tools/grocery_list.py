@@ -5,8 +5,8 @@ import csv
 from io import StringIO
 from typing import Iterable, List, Tuple
 
-from ..core.schemas import GroceryItem, MealItem, PlanDay, PlanMeal
-from ..core.utils import normalize_unit
+from core.schemas import GroceryItem, MealItem, PlanDay, PlanMeal
+from core.utils import normalize_unit
 
 CATEGORY_MAP = {
     "spinach": "Produce",

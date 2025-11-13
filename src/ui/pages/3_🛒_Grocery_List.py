@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import streamlit as st
 
-from ...tools.grocery_list import build_list_from_plan, export_csv
-from ..components import plan_table
+from tools.grocery_list import build_list_from_plan, export_csv
+from ui.components import plan_table
 
 
 def main() -> None:

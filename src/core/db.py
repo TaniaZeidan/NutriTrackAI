@@ -7,7 +7,7 @@ from datetime import date, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from ..config import DEFAULT_DB_PATH
+from config import DEFAULT_DB_PATH
 from .schemas import Meal, MealItem
 from .utils import macro_totals
 

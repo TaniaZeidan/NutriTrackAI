@@ -4,8 +4,8 @@ from __future__ import annotations
 import csv
 from typing import Dict, List
 
-from ..config import RAW_DATA_DIR
-from ..core.schemas import MealItem, PlanMeal, Step
+from config import RAW_DATA_DIR
+from core.schemas import MealItem, PlanMeal, Step
 
 
 def _load_dataset() -> List[Dict[str, str]]:

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from ...tools.cooking_assistant import recipe_steps
+from tools.cooking_assistant import recipe_steps
 
 
 def main() -> None:
