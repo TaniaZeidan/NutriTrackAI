@@ -5,11 +5,8 @@ import os
 from pathlib import Path
 from typing import Optional
 
-try:  # pragma: no cover
-    from dotenv import load_dotenv
-except Exception:  # pragma: no cover
-    def load_dotenv() -> None:  # type: ignore
-        return None
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -44,6 +41,9 @@ def get_env(name: str, default: Optional[str] = None) -> str:
     return value
 
 
+GOOGLE_API_KEY = get_google_api_key()
+
+
 __all__ = [
     "ROOT_DIR",
     "DATA_DIR",
@@ -53,6 +53,7 @@ __all__ = [
     "DEFAULT_DB_PATH",
     "EMBEDDING_MODEL",
     "CHAT_MODEL",
+    "GOOGLE_API_KEY",
     "get_google_api_key",
     "get_env",
 ]

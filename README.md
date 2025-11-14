@@ -4,8 +4,8 @@ NutriTrackAI is a multi-page Streamlit application for logging meals, tracking m
 
 ## Feature Highlights
 - **Food logging & macro tracking** - Log gram-based foods from a curated reference, extend the dataset when items are missing, and view totals and trends backed by SQLite (`data/processed/nutritrackai.db`).
-- **Weekly planning & grocery export** - Generate macro-aware plans with `tools.meal_planner`, summarize them in the UI, and turn them into categorized grocery CSVs.
-- **Cooking assistant** - Retrieve recipes with the FAISS-backed RAG pipeline and display scaled, tip-rich cooking steps.
+- **Weekly planning & grocery export** - Generate macro-aware plans either manually or by chatting with the NutriTrack agent, then summarize them in the UI and turn them into categorized grocery CSVs.
+- **Grounded cooking assistant** - Conversationally request recipes; the app retrieves relevant documents from the FAISS index and asks Gemini for a grounded, macro-aware response.
 - **Conversation & agent layer** - `src/agent` wires LangChain tools and optional Gemini models so you can orchestrate the calorie tracker, planner, grocery list, and cooking helpers through a single agent facade.
 - **All-local datasets** - Recipes and nutrition references live under `data/raw`, while FAISS artifacts and the SQLite database remain in `data/processed`.
 
@@ -62,9 +62,9 @@ What to expect:
 
 - Streamlit pages live in `src/pages` and show up in the left sidebar:
   - **Daily Meal Log** - Log foods by grams, calculate macros with the nutrition reference, and view per-meal breakdowns with delete actions.
-  - **Plan My Week** - Adjust macro targets in the sidebar, call `generate_plan`, and persist the result in `st.session_state`.
+  - **Plan My Week** - Adjust macro targets in the sidebar or chat with the Gemini-powered agent; either path saves plans into `st.session_state` for downstream pages.
   - **Grocery List** - Build categorized items from the current plan and download a CSV via `tools.grocery_list.export_csv`.
-  - **Cooking Assistant** - Search recipes, scale ingredients, and display structured tips from `tools.cooking_assistant.recipe_steps`.
+  - **Cooking Assistant** - Chat about recipes or macro goals; the page retrieves matching documents from FAISS and prompts Gemini to return grounded steps and macro tables.
   - **Progress Dashboard** - Summarize the last seven days with SQLite rollups and visualize macros using Streamlit charts.
 
 ## Data, Storage & Privacy

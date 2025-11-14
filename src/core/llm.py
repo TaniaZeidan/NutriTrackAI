@@ -18,12 +18,7 @@ class GeminiClient:
     """Wrapper around the Gemini API with graceful degradation."""
 
     def __init__(self, api_key: Optional[str] = None) -> None:
-        self.api_key = api_key
-        if self.api_key is None:
-            try:
-                self.api_key = get_google_api_key()
-            except RuntimeError:
-                self.api_key = None
+        self.api_key = api_key or get_google_api_key()
         if self.api_key and genai:
             genai.configure(api_key=self.api_key)
         self._offline = not (self.api_key and genai)

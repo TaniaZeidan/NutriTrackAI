@@ -10,3 +10,4 @@ __pycache__/
 .vscode/
 data/processed/faiss_index/*
 !.gitkeep
+venv/

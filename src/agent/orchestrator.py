@@ -6,12 +6,16 @@ from typing import Any, Dict, List
 try:  # pragma: no cover - optional heavy dependency
     from langchain.agents import AgentExecutor, initialize_agent, Tool
     from langchain.memory import ConversationBufferMemory
-    from langchain.chat_models import ChatGoogleGenerativeAI
+    try:
+        from langchain_community.chat_models import ChatGoogleGenerativeAI  # type: ignore
+    except Exception:
+        from langchain.chat_models import ChatGoogleGenerativeAI  # type: ignore
 except Exception:  # pragma: no cover
     AgentExecutor = None  # type: ignore
     Tool = Any = object  # type: ignore
     ConversationBufferMemory = None  # type: ignore
     ChatGoogleGenerativeAI = None  # type: ignore
+
 
 from core.llm import GeminiClient
 from core.memory import ConversationMemory, PreferenceMemory
