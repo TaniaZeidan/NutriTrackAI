@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.env
+*.db
+.data/
+.streamlit/
+.cache/
+.DS_Store
+.idea/
+.vscode/
+data/processed/faiss_index/*
+!.gitkeep
