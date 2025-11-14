@@ -7,7 +7,7 @@ from typing import Any, Dict, Optional
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 try:  # pragma: no cover - optional import
-    import google.generativeai as genai
+    import google.generativeai as genai 
 except Exception:  # pragma: no cover
     genai = None  # type: ignore
 
@@ -18,17 +18,20 @@ class GeminiClient:
     """Wrapper around the Gemini API with graceful degradation."""
 
     def __init__(self, api_key: Optional[str] = None) -> None:
-        self.api_key = api_key or get_google_api_key()
+        self.api_key = get_google_api_key()
         if self.api_key and genai:
             genai.configure(api_key=self.api_key)
-        self._offline = not (self.api_key and genai)
-
+        # self._offline = not (self.api_key and genai)
+        self._offline = False
+        
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=1, max=4))
     def generate_text(self, prompt: str, **kwargs: Any) -> str:
         """Generate text using Gemini or an offline fallback."""
         if self._offline:
             return self._offline_response(prompt)
         assert genai is not None
+        
+        print("Generating Model")
         model = genai.GenerativeModel(model_name=CHAT_MODEL)
         response = model.generate_content(prompt, **kwargs)
         return response.text or ""

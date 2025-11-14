@@ -19,17 +19,19 @@ DEFAULT_DB_PATH = PROCESSED_DATA_DIR / "nutritrackai.db"
 ENV_FILE = ROOT_DIR / ".env"
 
 EMBEDDING_MODEL = "text-embedding-004"
-CHAT_MODEL = "gemini-pro"
+CHAT_MODEL = "gemini-2.5-flash"
 
 
 def get_google_api_key() -> str:
     """Return the Google API key or raise a helpful error."""
+    print("Attempting to get API KEY")
     key = os.getenv("GOOGLE_API_KEY")
     if not key:
         raise RuntimeError(
             "Missing GOOGLE_API_KEY environment variable. "
             "Set it in a .env file or the environment."
         )
+    print("API Key successfully retrieved")
     return key
 
 
