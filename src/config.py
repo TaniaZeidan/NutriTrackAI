@@ -19,7 +19,7 @@ DEFAULT_DB_PATH = PROCESSED_DATA_DIR / "nutritrackai.db"
 ENV_FILE = ROOT_DIR / ".env"
 
 EMBEDDING_MODEL = "text-embedding-004"
-CHAT_MODEL = "gemini-2.5-flash"
+CHAT_MODEL = "gemini-2.5-pro"
 
 
 def get_google_api_key() -> str:

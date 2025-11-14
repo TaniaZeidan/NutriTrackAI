@@ -3,18 +3,24 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-try:  # pragma: no cover - optional heavy dependency
+try:  # pragma: no cover - optional dependencies
     from langchain.agents import AgentExecutor, initialize_agent, Tool
     from langchain.memory import ConversationBufferMemory
-    try:
-        from langchain_community.chat_models import ChatGoogleGenerativeAI  # type: ignore
-    except Exception:
-        from langchain.chat_models import ChatGoogleGenerativeAI  # type: ignore
 except Exception:  # pragma: no cover
     AgentExecutor = None  # type: ignore
-    Tool = Any = object  # type: ignore
+    Tool = None  # type: ignore
     ConversationBufferMemory = None  # type: ignore
-    ChatGoogleGenerativeAI = None  # type: ignore
+
+ChatGoogleGenerativeAI = None
+try:  # pragma: no cover - prefer dedicated package
+    from langchain_google_genai import ChatGoogleGenerativeAI as _GoogleChat  # type: ignore
+    ChatGoogleGenerativeAI = _GoogleChat
+except Exception:
+    try:
+        from langchain_community.chat_models import ChatGoogleGenerativeAI as _GoogleChat  # type: ignore
+        ChatGoogleGenerativeAI = _GoogleChat
+    except Exception:
+        ChatGoogleGenerativeAI = None  # type: ignore
 
 
 from core.llm import GeminiClient

@@ -5,7 +5,7 @@ NutriTrackAI is a multi-page Streamlit application for logging meals, tracking m
 ## Feature Highlights
 - **Food logging & macro tracking** - Log gram-based foods from a curated reference, extend the dataset when items are missing, and view totals and trends backed by SQLite (`data/processed/nutritrackai.db`).
 - **Weekly planning & grocery export** - Generate macro-aware plans either manually or by chatting with the NutriTrack agent, then summarize them in the UI and turn them into categorized grocery CSVs.
-- **Grounded cooking assistant** - Conversationally request recipes; the app retrieves relevant documents from the FAISS index and asks Gemini for a grounded, macro-aware response.
+- **Grounded cooking assistant** - Conversationally request recipes; the app retrieves relevant documents from the FAISS index (built from `recipes_sample.csv` plus `healthy_meal_plans.csv`) and asks Gemini for a grounded, macro-aware response.
 - **Conversation & agent layer** - `src/agent` wires LangChain tools and optional Gemini models so you can orchestrate the calorie tracker, planner, grocery list, and cooking helpers through a single agent facade.
 - **All-local datasets** - Recipes and nutrition references live under `data/raw`, while FAISS artifacts and the SQLite database remain in `data/processed`.
 
@@ -14,7 +14,7 @@ NutriTrackAI is a multi-page Streamlit application for logging meals, tracking m
 ```
 NutriTrackAI/
 |-- data/
-|   |-- raw/               # recipes_sample.csv, nutrition_reference.json
+|   |-- raw/               # recipes_sample.csv, healthy_meal_plans.csv, nutrition_reference.json
 |   `-- processed/         # nutritrackai.db, faiss_index/*
 |-- src/
 |   |-- app.py             # Streamlit entrypoint + page routing
@@ -54,7 +54,7 @@ streamlit run src/app.py
 
 What to expect:
 
-- On first launch a FAISS index is created from `data/raw/recipes_sample.csv` (handled by `core.embeddings.build_index`). You can force a rebuild later with:
+- On first launch a FAISS index is created from the files in `data/raw/` (both `recipes_sample.csv` and `healthy_meal_plans.csv`, handled by `core.embeddings.build_index`). You can force a rebuild later with:
 
   ```bash
   python -c "from src.core.embeddings import build_index; build_index(force=True)"
@@ -70,7 +70,7 @@ What to expect:
 ## Data, Storage & Privacy
 
 - **Nutrition reference** (`data/raw/nutrition_reference.json`) powers gram-based logging; you can append to it in the UI or edit the JSON directly.
-- **Recipe dataset** (`data/raw/recipes_sample.csv`) feeds both planning and the FAISS retrieval pipeline. Replace it with your own CSV to customize suggestions.
+- **Recipe datasets** (`data/raw/recipes_sample.csv` and `data/raw/healthy_meal_plans.csv`) feed both planning and the FAISS retrieval pipeline. Replace or extend them with your own CSV files to customize suggestions.
 - **Local persistence** - Logged meals live in `data/processed/nutritrackai.db` and never leave your machine. FAISS metadata/vectors are stored under `data/processed/faiss_index`.
 - Keep `.env` and any exported data files (e.g., grocery CSVs) out of version control to avoid leaking personal information or API keys.
 

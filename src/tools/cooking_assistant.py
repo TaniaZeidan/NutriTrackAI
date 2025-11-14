@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import csv
 import textwrap
+import re
+import re
 from typing import Dict, List
 
 from config import RAW_DATA_DIR
@@ -10,6 +12,7 @@ from core.llm import GeminiClient
 from core.prompts import COOKING_PROMPT
 from core.rag import search_recipes
 from core.schemas import MealItem, PlanMeal, RecipeDocument, Step
+from tools.ingredient_weights import estimate_ingredient_grams
 
 
 def _load_dataset() -> List[Dict[str, str]]:
@@ -21,12 +24,29 @@ def _find_recipe(query: str) -> Dict[str, str]:
     data = _load_dataset()
     query_lower = query.lower()
     for row in data:
-        if query_lower in row["title"].lower():
+        title_lower = row["title"].lower()
+        if query_lower in title_lower or title_lower in query_lower:
             return row
     for row in data:
         if query_lower in row["ingredients"].lower():
             return row
     raise ValueError(f"Recipe not found for query: {query}")
+
+
+def _normalize_text(text: str) -> str:
+    cleaned = re.sub(r"[^a-z0-9]+", " ", text.lower())
+    return " ".join(cleaned.split())
+
+
+def _find_recipe_by_title(query: str) -> Dict[str, str]:
+    """Return a recipe whose title appears verbatim in the query."""
+    normalized_query = _normalize_text(query)
+    data = _load_dataset()
+    for row in data:
+        title_norm = _normalize_text(row["title"])
+        if title_norm and title_norm in normalized_query:
+            return row
+    raise ValueError(f"Recipe title not found for query: {query}")
 
 
 def _suggest_recipes(query: str, limit: int = 3) -> List[Dict[str, str]]:
@@ -79,6 +99,100 @@ def recipe_steps(query: str, servings: int = 1) -> Dict[str, List[Step]]:
     return {"steps": parsed, "meal": meal}
 
 
+COOK_KEYWORDS = (
+    "cook",
+    "make",
+    "prepare",
+    "instructions",
+    "how do i",
+    "step",
+    "recipe for",
+    "guide",
+)
+
+
+def _is_instruction_request(query: str) -> bool:
+    lowered = query.lower()
+    return any(keyword in lowered for keyword in COOK_KEYWORDS)
+
+
+def _local_instruction_response(query: str, servings: int) -> Dict[str, object] | None:
+    try:
+        row = _find_recipe_by_title(query)
+    except ValueError:
+        return None
+    servings = max(1, int(servings))
+    ingredients = [
+        ingredient.strip().title()
+        for ingredient in row["ingredients"].split("|")
+        if ingredient.strip()
+    ]
+    steps_raw = [s.strip() for s in row["steps"].split(".") if s.strip()]
+    per_serving_macros = {
+        "calories": float(row["per_serving_calories"]),
+        "protein_g": float(row["protein_g"]),
+        "carb_g": float(row["carb_g"]),
+        "fat_g": float(row["fat_g"]),
+    }
+    totals = {key: value * servings for key, value in per_serving_macros.items()}
+    lines = [
+        f"NutriTrack found **{row['title']}**. Here's how to cook it for {servings} serving(s).",
+    ]
+    try:
+        estimates = estimate_ingredient_grams(ingredients, per_serving_macros["calories"], servings)
+    except ValueError:
+        estimates = []
+    lines.append("")
+    lines.append("### Ingredients (with estimated grams per serving)")
+    if estimates:
+        for entry in estimates:
+            lines.append(
+                f"- {entry['ingredient']} ({entry['grams_per_serving']:.0f} g per serving)"
+            )
+        missing = {ingredient.title() for ingredient in ingredients} - {
+            entry["ingredient"] for entry in estimates
+        }
+        for ingredient in missing:
+            lines.append(f"- {ingredient}")
+    else:
+        lines.extend(f"- {ingredient}" for ingredient in ingredients)
+    lines.append("")
+    lines.append("### Steps")
+    for idx, instruction in enumerate(steps_raw, start=1):
+        lines.append(f"{idx}. {instruction}")
+    lines.append("")
+    lines.append("### Macros")
+    lines.append(
+        f"- Per serving: {per_serving_macros['calories']:.0f} kcal, "
+        f"{per_serving_macros['protein_g']:.1f}g protein, "
+        f"{per_serving_macros['carb_g']:.1f}g carbs, "
+        f"{per_serving_macros['fat_g']:.1f}g fat"
+    )
+    lines.append(
+        f"- Total ({servings} servings): {totals['calories']:.0f} kcal, "
+        f"{totals['protein_g']:.1f}g protein, "
+        f"{totals['carb_g']:.1f}g carbs, "
+        f"{totals['fat_g']:.1f}g fat"
+    )
+    base_servings = max(1, int(float(row.get("servings", 1)) or 1))
+    scale = servings / base_servings
+    sources = [
+        {
+            "title": row["title"],
+            "tags": [tag for tag in row.get("tags", "").split(";") if tag.strip()],
+            "servings": base_servings,
+            "per_serving_macros": per_serving_macros,
+            "scaled_macros": {
+                "calories": round(per_serving_macros["calories"] * scale, 2),
+                "protein_g": round(per_serving_macros["protein_g"] * scale, 2),
+                "carb_g": round(per_serving_macros["carb_g"] * scale, 2),
+                "fat_g": round(per_serving_macros["fat_g"] * scale, 2),
+            },
+        }
+    ]
+    return {"answer": "\n".join(lines), "sources": sources}
+
+
 def _format_recipe_context(doc: RecipeDocument) -> str:
     section = textwrap.dedent(
         f"""
@@ -103,8 +217,13 @@ def grounded_cooking_response(
     llm: GeminiClient | None = None,
 ) -> Dict[str, object]:
     """Return a grounded NutriTrack response using RAG over recipes."""
-    results = search_recipes(query, k=top_k)
     servings = max(1, int(servings))
+    if _is_instruction_request(query):
+        direct = _local_instruction_response(query, servings)
+        if direct:
+            return direct
+
+    results = search_recipes(query, k=top_k)
     if not results:
         suggestions = _suggest_recipes(query)
         if not suggestions:
@@ -191,7 +310,6 @@ def grounded_cooking_response(
         - If they ask for ideas or recipes containing an ingredient (e.g., "give me recipes with chicken"),
           list up to three relevant recipes. For each recipe include calories/protein/carbs/fat per serving,
           total macros for {servings} servings, and a short summary. No steps unless explicitly requested.
-        - Always cite the recipe titles you relied on under a "Sources" section.
         - Never invent data not in the context.
 
         User request: {query}
