@@ -64,7 +64,7 @@ def plan_table(plan: Iterable[PlanDay]) -> None:
         for meal in day.meals:
             totals = meal.totals
             st.markdown(
-                f"**{meal.meal_type.title()}** — {meal.name}"
+                f"**{meal.meal_type.title()}** - {meal.name}"
                 f" ({totals['calories']:.0f} kcal, {totals['protein_g']:.0f}g protein)"
             )
             if meal.notes:

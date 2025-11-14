@@ -161,7 +161,16 @@ class Database:
 
     def daily_totals(self, day: date, user_id: int = 1) -> Dict[str, float]:
         meals = self.meals_for_date(day, user_id)
-        return macro_totals(meals)
+        normalized = [
+            {
+                "calories": meal.get("calories", meal.get("total_cal", 0.0)),
+                "protein_g": meal.get("protein_g", 0.0),
+                "carb_g": meal.get("carb_g", 0.0),
+                "fat_g": meal.get("fat_g", 0.0),
+            }
+            for meal in meals
+        ]
+        return macro_totals(normalized)
 
     def weekly_summary(self, ending: date, user_id: int = 1) -> Dict[str, float]:
         start = ending - timedelta(days=6)
@@ -171,7 +180,7 @@ class Database:
                 "WHERE user_id=? AND dt BETWEEN ? AND ?",
                 (user_id, start.isoformat(), ending.isoformat()),
             )
-            rows = cur.fetchall()
+            rows = [dict(row) for row in cur.fetchall()]
         return macro_totals(rows)
 
     def planned_meals(self, start: date, end: date, user_id: int = 1) -> List[Dict[str, str]]:
@@ -182,6 +191,12 @@ class Database:
             )
             rows = cur.fetchall()
         return [dict(row) for row in rows]
+
+    def delete_meal(self, meal_id: int) -> None:
+        """Delete a meal and its items."""
+        with self.cursor() as cur:
+            cur.execute("DELETE FROM meal_items WHERE meal_id=?", (meal_id,))
+            cur.execute("DELETE FROM meals WHERE id=?", (meal_id,))
 
     def close(self) -> None:
         if self._conn:
