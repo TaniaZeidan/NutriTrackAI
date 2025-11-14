@@ -65,6 +65,12 @@
     "carb_g": 11,
     "fat_g": 0
   },
+  "apple pie": {
+    "calories": 400.0,
+    "protein_g": 10.0,
+    "carb_g": 60.0,
+    "fat_g": 10.0
+  },
   "apricot": {
     "calories": 50,
     "protein_g": 1,
