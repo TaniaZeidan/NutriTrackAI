@@ -5,11 +5,8 @@ import os
 from pathlib import Path
 from typing import Optional
 
-try:  # pragma: no cover
-    from dotenv import load_dotenv
-except Exception:  # pragma: no cover
-    def load_dotenv() -> None:  # type: ignore
-        return None
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -22,17 +19,19 @@ DEFAULT_DB_PATH = PROCESSED_DATA_DIR / "nutritrackai.db"
 ENV_FILE = ROOT_DIR / ".env"
 
 EMBEDDING_MODEL = "text-embedding-004"
-CHAT_MODEL = "gemini-pro"
+CHAT_MODEL = "gemini-2.5-pro"
 
 
 def get_google_api_key() -> str:
     """Return the Google API key or raise a helpful error."""
+    print("Attempting to get API KEY")
     key = os.getenv("GOOGLE_API_KEY")
     if not key:
         raise RuntimeError(
             "Missing GOOGLE_API_KEY environment variable. "
             "Set it in a .env file or the environment."
         )
+    print("API Key successfully retrieved")
     return key
 
 
@@ -44,6 +43,9 @@ def get_env(name: str, default: Optional[str] = None) -> str:
     return value
 
 
+GOOGLE_API_KEY = get_google_api_key()
+
+
 __all__ = [
     "ROOT_DIR",
     "DATA_DIR",
@@ -53,6 +55,7 @@ __all__ = [
     "DEFAULT_DB_PATH",
     "EMBEDDING_MODEL",
     "CHAT_MODEL",
+    "GOOGLE_API_KEY",
     "get_google_api_key",
     "get_env",
 ]

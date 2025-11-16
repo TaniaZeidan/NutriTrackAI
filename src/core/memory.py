@@ -5,7 +5,7 @@ from collections import deque
 from datetime import datetime
 from typing import Deque, Dict, List, Tuple
 
-from schemas import MacroTargets
+from core.schemas import MacroTargets
 
 
 class ConversationMemory:

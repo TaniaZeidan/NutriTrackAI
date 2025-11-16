@@ -1,6 +1,7 @@
 """Embedding utilities using Google Generative AI and FAISS."""
 from __future__ import annotations
 
+import csv
 import hashlib
 import json
 from pathlib import Path
@@ -54,9 +55,11 @@ def _get_embeddings(texts: List[str]) -> List[List[float]]:
     return [_normalize(_hash_embed(text)) for text in texts]
 
 
-def _load_raw_documents() -> List[RecipeDocument]:
+def _load_recipe_sample_documents() -> List[RecipeDocument]:
     path = RAW_DATA_DIR / "recipes_sample.csv"
     documents: List[RecipeDocument] = []
+    if not path.exists():
+        return documents
     with path.open("r", encoding="utf-8") as f:
         header = f.readline().strip().split(",")
         for idx, line in enumerate(f):
@@ -79,7 +82,7 @@ def _load_raw_documents() -> List[RecipeDocument]:
             text = "\n".join([title, ingredients.replace("|", ", "), steps, f"Tags: {tags}"])
             documents.append(
                 RecipeDocument(
-                    recipe_id=f"recipe-{idx}",
+                    recipe_id=f"classic-recipe-{idx}",
                     title=title,
                     text=text,
                     tags=[t.strip() for t in tags.split(";") if t.strip()],
@@ -91,6 +94,69 @@ def _load_raw_documents() -> List[RecipeDocument]:
                 )
             )
     return documents
+
+
+def _bool_flag(value: str | None) -> bool:
+    return str(value or "").strip().lower() in {"1", "true", "yes", "y"}
+
+
+def _load_meal_plan_documents(start_idx: int = 0) -> List[RecipeDocument]:
+    path = RAW_DATA_DIR / "healthy_meal_plans.csv"
+    documents: List[RecipeDocument] = []
+    if not path.exists():
+        return documents
+    with path.open("r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for offset, row in enumerate(reader):
+            name = (row.get("meal_name") or "Healthy Meal").strip()
+            if not name:
+                continue
+            ingredient_score = float(row.get("num_ingredients", 0.0) or 0.0)
+            approx_ingredients = max(1, round(ingredient_score * 10))
+            prep_minutes = max(5, round(float(row.get("prep_time", 0.0) or 0.0) * 60))
+            calories = round(float(row.get("calories", 0.0) or 0.0) * 900, 2)
+            protein = round(float(row.get("protein", 0.0) or 0.0) * 100, 2)
+            fat = round(float(row.get("fat", 0.0) or 0.0) * 100, 2)
+            carbs = round(float(row.get("carbs", 0.0) or 0.0) * 100, 2)
+            diet_tags = []
+            for field in [
+                ("vegan", "vegan"),
+                ("vegetarian", "vegetarian"),
+                ("keto", "keto"),
+                ("paleo", "paleo"),
+                ("gluten_free", "gluten-free"),
+                ("mediterranean", "mediterranean"),
+            ]:
+                if _bool_flag(row.get(field[0])):
+                    diet_tags.append(field[1])
+            if _bool_flag(row.get("is_healthy")):
+                diet_tags.append("healthy")
+            description = (
+                f"{name} is a meal suggestion with about {calories:.0f} calories per serving, "
+                f"{protein:.1f} g protein, {carbs:.1f} g carbs, and {fat:.1f} g fat. "
+                f"It typically uses ~{approx_ingredients} ingredients and takes around {prep_minutes} minutes to prepare. "
+                f"Diet suitability: {', '.join(diet_tags) if diet_tags else 'general audience'}."
+            )
+            documents.append(
+                RecipeDocument(
+                    recipe_id=f"meal-plan-{start_idx + offset}",
+                    title=name,
+                    text=description,
+                    tags=diet_tags,
+                    servings=1,
+                    calories=calories,
+                    protein_g=protein,
+                    carb_g=carbs,
+                    fat_g=fat,
+                )
+            )
+    return documents
+
+
+def _load_raw_documents() -> List[RecipeDocument]:
+    recipes = _load_recipe_sample_documents()
+    meal_plans = _load_meal_plan_documents(start_idx=len(recipes))
+    return recipes + meal_plans
 
 
 def build_index(force: bool = False) -> None:
