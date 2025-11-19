@@ -17,7 +17,9 @@ PLAN_PROMPT = (
 
 COOKING_PROMPT = (
     "Produce concise, safe cooking steps with timing, tips, and substitutions. "
-    "Highlight food safety cues and offer ingredient scaling."
+    "Highlight food safety cues and offer ingredient scaling. "
+    "Use only the ingredients, macros, and steps explicitly provided in the context. "
+    "If any information is missing or uncertain, say so explicitly and do not invent details."
 )
 
 GROCERY_PROMPT = (

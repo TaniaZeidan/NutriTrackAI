@@ -1,7 +1,9 @@
 streamlit==1.33.0
 langchain==0.1.14
+langchain-core==0.1.42
 langchain-google-genai==0.0.11
-google-generativeai==0.4.1 
+langchain-community==0.0.31
+google-generativeai==0.4.1
 faiss-cpu==1.12.0
 python-dotenv==1.0.1
 pandas==2.2.2
@@ -10,5 +12,4 @@ pydantic==2.6.4
 tenacity==8.2.3
 pytest==8.1.1
 matplotlib==3.8.3
-langchain-community
-google
+typing-extensions==4.10.0
