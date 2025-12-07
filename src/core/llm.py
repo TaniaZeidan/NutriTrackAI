@@ -38,8 +38,10 @@ class GeminiClient:
         assert genai is not None
         
         try:
+            print("Sending Request to LLM")
             model = genai.GenerativeModel(model_name=CHAT_MODEL)
             response = model.generate_content(prompt, **kwargs)
+            print(response)
             return response.text or ""
         except Exception as e:
             # Fallback to offline if API fails

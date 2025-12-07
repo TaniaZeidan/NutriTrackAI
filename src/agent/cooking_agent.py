@@ -1,18 +1,12 @@
-"""Simplified Cooking Assistant Agent - Direct tool calling."""
 from __future__ import annotations
-
 from typing import Dict
-
 from core.llm import GeminiClient
 from core.rag import search_recipes
 from tools.cooking_assistant import grounded_cooking_response
 
 
-class CookingAgent:
-    """Simplified cooking assistant agent with direct RAG integration."""
-    
+class CookingAgent:    
     def __init__(self, llm: GeminiClient = None):
-        """Initialize the cooking agent."""
         self.llm = llm or GeminiClient()
     
     def chat(self, user_input: str, servings: int = 2) -> str:

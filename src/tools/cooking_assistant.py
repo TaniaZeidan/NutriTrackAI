@@ -1,25 +1,35 @@
-"""Cooking assistant tool - simplified and functional."""
 from __future__ import annotations
-
-import csv
-import re
 from typing import Dict, List
-
 from config import RAW_DATA_DIR
 from core.llm import GeminiClient
 from core.rag import search_recipes
+import time
+import csv
+import re
+
+# Cache and rate limiting
+_response_cache = {}
+_last_llm_call = 0
+_min_call_interval = 2
 
 
 def _load_recipes() -> List[Dict[str, str]]:
-    """Load recipes from CSV."""
-    csv_path = RAW_DATA_DIR / "recipes_sample.csv"
+    """Load recipes from CSV - handles both 'title' and 'meal_name' columns."""
+    csv_path = RAW_DATA_DIR / "healthy_meal_plans.csv"
     if not csv_path.exists():
         print(f"Warning: Recipe file not found at {csv_path}")
         return []
     
     try:
         with csv_path.open("r", encoding="utf-8") as f:
-            return list(csv.DictReader(f))
+            reader = csv.DictReader(f)
+            recipes = []
+            for row in reader:
+                # Map meal_name -> title if needed
+                if 'meal_name' in row and 'title' not in row:
+                    row['title'] = row['meal_name']
+                recipes.append(row)
+            return recipes
     except Exception as e:
         print(f"Error loading recipes: {e}")
         return []
@@ -31,220 +41,209 @@ def _normalize(text: str) -> str:
 
 
 def _find_recipe(query: str) -> Dict[str, str] | None:
-    """Find recipe by title match in query."""
+    """Find recipe by title match."""
     query_norm = _normalize(query)
     recipes = _load_recipes()
     
-    # Try exact title match first
+    # Try exact match
     for recipe in recipes:
-        title_norm = _normalize(recipe.get("title", ""))
-        if title_norm and title_norm == query_norm:
+        title = recipe.get("title") or recipe.get("meal_name", "")
+        if _normalize(title) == query_norm:
             return recipe
     
     # Try contains match
     for recipe in recipes:
-        title_norm = _normalize(recipe.get("title", ""))
-        if title_norm and title_norm in query_norm:
+        title = recipe.get("title") or recipe.get("meal_name", "")
+        if query_norm in _normalize(title):
             return recipe
     
     return None
 
 
 def _format_instructions(recipe: Dict[str, str], servings: int) -> str:
-    """Format recipe with full instructions and nutrition info."""
-    title = recipe.get("title", "Recipe")
-    base_servings = max(1, int(float(recipe.get("servings", 1))))
-    scale = servings / base_servings
+    """Format recipe with available information."""
+    title = recipe.get("title") or recipe.get("meal_name", "Recipe")
+    base_servings = 1
+    scale = servings
     
-    # Get macros per serving
-    cals_per_serving = float(recipe.get("per_serving_calories", 0))
-    protein_per_serving = float(recipe.get("protein_g", 0))
-    carbs_per_serving = float(recipe.get("carb_g", 0))
-    fat_per_serving = float(recipe.get("fat_g", 0))
+    # Get macros - handle normalized values (0-1) from CSV
+    cals = float(recipe.get("calories", 0))
+    protein = float(recipe.get("protein", 0))
+    carbs = float(recipe.get("carbs", 0))
+    fat = float(recipe.get("fat", 0))
     
-    # Calculate totals
-    total_cals = cals_per_serving * servings
-    total_protein = protein_per_serving * servings
-    total_carbs = carbs_per_serving * servings
-    total_fat = fat_per_serving * servings
+    # Denormalize if values are 0-1 range
+    if cals < 2:
+        cals = cals * 600 + 200
+    if protein < 2:
+        protein = protein * 50
+    if carbs < 2:
+        carbs = carbs * 80
+    if fat < 2:
+        fat = fat * 30
     
-    # Parse ingredients and steps
-    ingredients_raw = recipe.get("ingredients", "")
-    ingredients = [i.strip().title() for i in ingredients_raw.split("|") if i.strip()]
-    
-    steps_raw = recipe.get("steps", "")
-    steps = [s.strip() for s in steps_raw.split(".") if s.strip()]
-    
-    # Get tags
-    tags = recipe.get("tags", "")
+    # Get dietary tags
+    tags = []
+    for tag, col in [("vegan", "vegan"), ("vegetarian", "vegetarian"), 
+                     ("keto", "keto"), ("paleo", "paleo"),
+                     ("gluten-free", "gluten_free"), ("mediterranean", "mediterranean"),
+                     ("healthy", "is_healthy")]:
+        if str(recipe.get(col, "0")) in ["1", "True", "true"]:
+            tags.append(tag)
     
     # Build response
     lines = [
         f"# {title}",
-        f"*{tags}*\n" if tags else "",
+        f"*{', '.join(tags)}*\n" if tags else "",
         f"**Servings:** {servings}\n",
-        "## Ingredients\n"
+        "## Ingredients\n",
+        "*Ingredient details not available in this dataset*\n",
+        "## Instructions\n",
+        "*Detailed cooking instructions not available in this dataset*\n",
+        "## Nutrition Information\n",
+        "**Per Serving:**",
+        f"- Calories: {cals:.0f} kcal",
+        f"- Protein: {protein:.0f}g",
+        f"- Carbs: {carbs:.0f}g",
+        f"- Fat: {fat:.0f}g",
+        f"\n**Total for {servings} serving(s):**",
+        f"- Calories: {cals * servings:.0f} kcal",
+        f"- Protein: {protein * servings:.0f}g",
+        f"- Carbs: {carbs * servings:.0f}g",
+        f"- Fat: {fat * servings:.0f}g"
     ]
     
-    for ingredient in ingredients:
-        lines.append(f"- {ingredient}")
-    
-    lines.append("\n## Instructions\n")
-    
-    for i, step in enumerate(steps, 1):
-        lines.append(f"{i}. {step}")
-    
-    lines.append("\n## Nutrition Information\n")
-    
-    lines.append("**Per Serving:**")
-    lines.append(f"- Calories: {cals_per_serving:.0f} kcal")
-    lines.append(f"- Protein: {protein_per_serving:.0f}g")
-    lines.append(f"- Carbs: {carbs_per_serving:.0f}g")
-    lines.append(f"- Fat: {fat_per_serving:.0f}g")
-    
-    lines.append(f"\n**Total for {servings} serving(s):**")
-    lines.append(f"- Calories: {total_cals:.0f} kcal")
-    lines.append(f"- Protein: {total_protein:.0f}g")
-    lines.append(f"- Carbs: {total_carbs:.0f}g")
-    lines.append(f"- Fat: {total_fat:.0f}g")
-    
     return "\n".join(lines)
+
+
+def _build_recipe_context(results: List, servings: int) -> str:
+    """Build context from RAG results."""
+    context_parts = []
+    
+    for i, result in enumerate(results, 1):
+        doc = result.document
+        scale = servings / max(1, doc.servings)
+        
+        recipe_info = (
+            f"Recipe {i}: {doc.title}\n"
+            f"Tags: {', '.join(doc.tags) if doc.tags else 'None'}\n"
+            f"For {servings} serving(s): {doc.calories * scale:.0f} kcal, "
+            f"Protein: {doc.protein_g * scale:.0f}g, Carbs: {doc.carb_g * scale:.0f}g, Fat: {doc.fat_g * scale:.0f}g\n"
+        )
+        context_parts.append(recipe_info)
+    
+    return "\n".join(context_parts)
 
 
 def grounded_cooking_response(
     query: str,
     servings: int = 2,
-    top_k: int = 5,
+    top_k: int = 3,
     llm: GeminiClient | None = None
 ) -> Dict[str, object]:
-    """Main cooking response function using RAG.
-    
-    This function provides two types of responses:
-    1. If asking for specific recipe instructions: Returns formatted recipe with steps
-    2. If searching for recipes: Returns list of matching recipes from RAG
-    
-    Args:
-        query: User's cooking question
-        servings: Number of servings to prepare
-        top_k: Number of recipes to retrieve from RAG
-        llm: LLM client (optional, not used in current implementation)
-    
-    Returns:
-        Dictionary with:
-        - answer: Formatted response string
-        - sources: List of source recipes used
-    """
+    """Main cooking response using RAG + LLM."""
     servings = max(1, int(servings))
+    llm = llm or GeminiClient()
     
-    # Check if user is asking for specific cooking instructions
-    instruction_keywords = [
-        "how", "make", "cook", "prepare", "instructions", 
-        "steps", "recipe for", "guide", "directions"
-    ]
-    
+    instruction_keywords = ["how", "how to", "how do i", "make", "cook", "prepare", "instructions", "steps"]
     is_instruction_request = any(kw in query.lower() for kw in instruction_keywords)
     
+    # Try exact recipe match for instructions
     if is_instruction_request:
-        # Try to find exact recipe match
         recipe = _find_recipe(query)
         if recipe:
-            answer = _format_instructions(recipe, servings)
             return {
-                "answer": answer,
-                "sources": [{"title": recipe.get("title", "Recipe")}]
+                "answer": _format_instructions(recipe, servings),
+                "sources": [{"title": recipe.get("title") or recipe.get("meal_name")}]
             }
+        else:
+            # Clean query for RAG
+            for kw in instruction_keywords:
+                query = query.lower().replace(kw, "").strip()
+            query = query.replace("?", "").strip()
     
-    # Use RAG to search for recipes
+    # RAG search
     try:
         results = search_recipes(query, k=top_k)
     except Exception as e:
-        print(f"Error in RAG search: {e}")
         return {
-            "answer": (
-                f"I encountered an error searching recipes: {str(e)}\n\n"
-                "Please try:\n"
-                "- Simplifying your query\n"
-                "- Asking about specific recipe names\n"
-                "- Checking that recipe data files exist"
-            ),
+            "answer": f"Error searching recipes: {e}\nTry a simpler query.",
             "sources": []
         }
     
     if not results:
         return {
-            "answer": (
-                "I couldn't find any recipes matching your query.\n\n"
-                "**Try asking:**\n"
-                "- 'Show me high protein recipes'\n"
-                "- 'How do I make Grilled Chicken Bowl?'\n"
-                "- 'Give me vegetarian recipes'\n"
-                "- 'What are some healthy breakfast ideas?'"
-            ),
+            "answer": "No recipes found. Try: 'chicken recipes', 'vegetarian meals', 'high protein'",
             "sources": []
         }
     
-    # Format search results
-    lines = ["**I found these recipes for you:**\n"]
-    sources = []
+    # Check cache
+    cache_key = f"{_normalize(query)}:{servings}"
+    if cache_key in _response_cache:
+        return _response_cache[cache_key]
     
-    for i, result in enumerate(results, 1):
-        doc = result.document
+    # Build LLM prompt
+    context = _build_recipe_context(results, servings)
+    prompt = f"""User: "{query}"
+
+{context}
+
+{"Say you don't have that exact recipe but suggest alternatives." if is_instruction_request else ""}
+
+Brief response (100 words):
+- Best 1-2 options
+- Calories & protein
+- Dietary tags
+End: "Ask 'How do I make [recipe]?' for details"
+
+Only use data above."""
+
+    try:
+        # Rate limiting
+        global _last_llm_call
+        wait = _min_call_interval - (time.time() - _last_llm_call)
+        if wait > 0:
+            time.sleep(wait)
         
-        # Scale macros for requested servings
-        scale = servings / max(1, doc.servings)
-        scaled_cals = doc.calories * scale
-        scaled_protein = doc.protein_g * scale
-        scaled_carbs = doc.carb_g * scale
-        scaled_fat = doc.fat_g * scale
+        _last_llm_call = time.time()
+        llm_response = llm.generate_text(prompt)
         
-        # Format recipe entry
-        lines.append(f"**{i}. {doc.title}**")
+        sources = [{"title": r.document.title, "tags": r.document.tags} for r in results]
+        result_dict = {"answer": llm_response, "sources": sources}
         
-        if doc.tags:
-            lines.append(f"   *Tags: {', '.join(doc.tags)}*")
+        # Cache (max 50)
+        if len(_response_cache) >= 50:
+            _response_cache.pop(next(iter(_response_cache)))
+        _response_cache[cache_key] = result_dict
         
-        lines.append(
-            f"   **For {servings} serving(s):** "
-            f"{scaled_cals:.0f} kcal | "
-            f"P: {scaled_protein:.0f}g | "
-            f"C: {scaled_carbs:.0f}g | "
-            f"F: {scaled_fat:.0f}g\n"
-        )
-        
-        sources.append({
-            "title": doc.title,
-            "tags": doc.tags,
-            "servings": doc.servings,
-            "calories": doc.calories,
-            "protein_g": doc.protein_g,
-            "carb_g": doc.carb_g,
-            "fat_g": doc.fat_g
-        })
+        return result_dict
     
-    lines.append(
-        "\n💡 **Tip:** To get detailed cooking instructions, ask: "
-        "*'How do I make [recipe name]?'*"
-    )
-    
-    return {
-        "answer": "\n".join(lines),
-        "sources": sources
-    }
+    except Exception as e:
+        # Rate limit or other error
+        if any(x in str(e).lower() for x in ["rate limit", "quota", "429"]):
+            return {
+                "answer": (
+                    "⏱️ **Rate limit**\n\n" +
+                    "\n".join([f"**{i+1}. {r.document.title}** - {r.document.calories * servings / max(1, r.document.servings):.0f} kcal"
+                              for i, r in enumerate(results)]) +
+                    "\n\n💡 Ask 'How do I make [name]?' for details"
+                ),
+                "sources": [{"title": r.document.title} for r in results]
+            }
+        
+        # Generic fallback
+        return {
+            "answer": "\n".join([
+                "**Recipes:**\n",
+                *[f"{i+1}. **{r.document.title}** ({r.document.calories * servings / max(1, r.document.servings):.0f} kcal, {r.document.protein_g * servings / max(1, r.document.servings):.0f}g protein)"
+                  for i, r in enumerate(results)]
+            ]),
+            "sources": [{"title": r.document.title} for r in results]
+        }
 
 
 def recipe_steps(query: str, servings: int = 1) -> Dict[str, object]:
-    """Legacy function for backward compatibility.
-    
-    This function is kept for any old code that might reference it.
-    It simply redirects to grounded_cooking_response.
-    
-    Args:
-        query: Recipe query
-        servings: Number of servings
-    
-    Returns:
-        Same as grounded_cooking_response
-    """
+    """Legacy compatibility."""
     return grounded_cooking_response(query, servings)
 
 
