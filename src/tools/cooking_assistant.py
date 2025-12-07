@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import csv
+import json
 import re
 from typing import Dict, List
 
@@ -50,7 +51,61 @@ def _find_recipe(query: str) -> Dict[str, str] | None:
     return None
 
 
-def _format_instructions(recipe: Dict[str, str], servings: int) -> str:
+def _guess_base_amount(ingredient: str) -> float:
+    """Heuristic base grams per ingredient when structured data is missing."""
+    name = ingredient.lower()
+    if any(k in name for k in ["salt", "pepper", "spice", "season", "garlic", "ginger", "herb"]):
+        return 5
+    if any(k in name for k in ["oil", "sauce", "broth", "stock", "milk", "water"]):
+        return 120
+    if any(k in name for k in ["seed", "chia", "flax"]):
+        return 12
+    if any(k in name for k in ["butter", "nut", "almond", "peanut"]):
+        return 20
+    if any(k in name for k in ["bread", "rice", "pasta", "noodle", "grain", "oat"]):
+        return 70
+    if any(k in name for k in ["banana", "apple", "fruit", "berry"]):
+        return 100
+    if any(k in name for k in ["chicken", "beef", "turkey", "pork", "fish", "salmon", "shrimp", "tofu", "tempeh"]):
+        return 120
+    return 80
+
+
+def _estimate_ingredient_grams(
+    ingredients: List[str],
+    base_servings: int,
+    target_servings: int,
+    llm: GeminiClient | None,
+) -> Dict[str, float]:
+    """Estimate grams for each ingredient, using LLM when available."""
+    scale = target_servings / max(1, base_servings)
+    estimates = {ing.lower(): _guess_base_amount(ing) * scale for ing in ingredients}
+
+    if llm:
+        prompt = (
+            "You are a recipe scaler. Given an ingredient list and servings, return ONLY JSON "
+            "with grams per ingredient for the target servings. Round grams to whole numbers.\n"
+            f"Base servings: {base_servings}\n"
+            f"Target servings: {target_servings}\n"
+            f"Ingredients: {', '.join(ingredients)}\n\n"
+            'Respond as: {"ingredients": [{"name": "ingredient", "grams": 120}]}'
+        )
+        try:
+            llm_response = llm.generate_text(prompt)
+            parsed = json.loads(llm_response)
+            items = parsed.get("ingredients", []) if isinstance(parsed, dict) else []
+            for item in items:
+                name = str(item.get("name", "")).lower().strip()
+                grams = float(item.get("grams", 0))
+                if name and grams > 0:
+                    estimates[name] = grams
+        except Exception:
+            pass
+
+    return {k: round(v, 0) for k, v in estimates.items()}
+
+
+def _format_instructions(recipe: Dict[str, str], servings: int, llm: GeminiClient | None = None) -> str:
     """Format recipe with full instructions and nutrition info."""
     title = recipe.get("title", "Recipe")
     base_servings = max(1, int(float(recipe.get("servings", 1))))
@@ -71,6 +126,7 @@ def _format_instructions(recipe: Dict[str, str], servings: int) -> str:
     # Parse ingredients and steps
     ingredients_raw = recipe.get("ingredients", "")
     ingredients = [i.strip().title() for i in ingredients_raw.split("|") if i.strip()]
+    ingredient_grams = _estimate_ingredient_grams(ingredients, base_servings, servings, llm)
     
     steps_raw = recipe.get("steps", "")
     steps = [s.strip() for s in steps_raw.split(".") if s.strip()]
@@ -87,7 +143,11 @@ def _format_instructions(recipe: Dict[str, str], servings: int) -> str:
     ]
     
     for ingredient in ingredients:
-        lines.append(f"- {ingredient}")
+        grams = ingredient_grams.get(ingredient.lower())
+        if grams:
+            lines.append(f"- {ingredient} — {grams:.0f} g")
+        else:
+            lines.append(f"- {ingredient}")
     
     lines.append("\n## Instructions\n")
     
@@ -148,7 +208,7 @@ def grounded_cooking_response(
         # Try to find exact recipe match
         recipe = _find_recipe(query)
         if recipe:
-            answer = _format_instructions(recipe, servings)
+            answer = _format_instructions(recipe, servings, llm=llm)
             return {
                 "answer": answer,
                 "sources": [{"title": recipe.get("title", "Recipe")}]

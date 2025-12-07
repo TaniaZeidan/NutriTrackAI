@@ -27,6 +27,6 @@ if "weekly_plan" not in st.session_state:
         MacroTargets(calories=2000, protein=130, carbs=220, fat=60), days=1
     )
 
-st.sidebar.info("Use the pages menu to explore logging, planning, groceries, cooking, and progress.")
+st.sidebar.info("Use the pages menu to explore logging, planning, and cooking assistance.")
 
 st.write("Select a page from the sidebar to get started.")

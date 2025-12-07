@@ -11,7 +11,6 @@ except Exception:  # pragma: no cover
 from .calorie_tracker import log_meal
 from .calorie_calculator import get_personalized_targets
 from .meal_planner import generate_plan
-from .grocery_list import build_list_from_plan
 from .cooking_assistant import recipe_steps
 from .ingredient_weights import estimate_ingredient_grams
 
@@ -23,7 +22,6 @@ def get_tools() -> List[object]:
             {"name": "calorie_tracker", "func": log_meal},
             {"name": "calorie_calculator", "func": get_personalized_targets},
             {"name": "meal_planner", "func": generate_plan},
-            {"name": "grocery_list", "func": build_list_from_plan},
             {"name": "cooking_assistant", "func": recipe_steps},
             {"name": "ingredient_weights", "func": estimate_ingredient_grams},
         ]
@@ -46,11 +44,6 @@ def get_tools() -> List[object]:
             name="meal_planner",
             func=generate_plan,
             description="Generate balanced weekly meal plans matching macro targets"
-        ),
-        Tool(
-            name="grocery_list",
-            func=build_list_from_plan,
-            description="Aggregate and categorize grocery items from meal plans"
         ),
         Tool(
             name="cooking_assistant",

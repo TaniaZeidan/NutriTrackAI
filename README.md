@@ -1,12 +1,12 @@
 # NutriTrackAI
 
-NutriTrackAI is a multi-page Streamlit application for logging meals, tracking macros, planning weekly menus, exporting grocery lists, and getting guided cooking help. The project pairs local tooling (SQLite, FAISS, nutrition reference data) with LangChain/Gemini integrations so it runs offline by default but can call Gemini when a Google API key is available.
+NutriTrackAI is a multi-page Streamlit application for logging meals, tracking macros, planning weekly menus, and getting guided cooking help. The project pairs local tooling (SQLite, FAISS, nutrition reference data) with LangChain/Gemini integrations so it runs offline by default but can call Gemini when a Google API key is available.
 
 ## Feature Highlights
 - **Food logging & macro tracking** - Log gram-based foods from a curated reference, extend the dataset when items are missing, and view totals and trends backed by SQLite (`data/processed/nutritrackai.db`).
-- **Weekly planning & grocery export** - Generate macro-aware plans either manually or by chatting with the NutriTrack agent, then summarize them in the UI and turn them into categorized grocery CSVs.
+- **Weekly planning** - Generate macro-aware plans either manually or by chatting with the NutriTrack agent, then summarize them in the UI.
 - **Grounded cooking assistant** - Conversationally request recipes; the app retrieves relevant documents from the FAISS index (built from `recipes_sample.csv` plus `healthy_meal_plans.csv`) and asks Gemini for a grounded, macro-aware response.
-- **Conversation & agent layer** - `src/agent` wires LangChain tools and optional Gemini models so you can orchestrate the calorie tracker, planner, grocery list, and cooking helpers through a single agent facade.
+- **Conversation & agent layer** - `src/agent` wires LangChain tools and optional Gemini models so you can orchestrate the calorie tracker, planner, and cooking helpers through a single agent facade.
 - **All-local datasets** - Recipes and nutrition references live under `data/raw`, while FAISS artifacts and the SQLite database remain in `data/processed`.
 
 ## Repository Layout
@@ -18,9 +18,9 @@ NutriTrackAI/
 |   `-- processed/         # nutritrackai.db, faiss_index/*
 |-- src/
 |   |-- app.py             # Streamlit entrypoint + page routing
-|   |-- pages/             # Daily Log, Plan My Week, Grocery List, Cooking, Progress
+|   |-- pages/             # Daily Log, Plan My Week, Cooking
 |   |-- core/              # config, schemas, db, utils, prompts, embeddings, llm
-|   |-- tools/             # calorie tracker, planner, grocery, cooking helpers
+|   |-- tools/             # calorie tracker, planner, cooking helpers
 |   |-- agent/             # LangChain/Gemini orchestration
 |   `-- ui/                # shared Streamlit components
 |-- tests/                 # pytest coverage for macros, RAG, and tools
@@ -63,16 +63,14 @@ What to expect:
 - Streamlit pages live in `src/pages` and show up in the left sidebar:
   - **Daily Meal Log** - Log foods by grams, calculate macros with the nutrition reference, and view per-meal breakdowns with delete actions.
   - **Plan My Week** - Adjust macro targets in the sidebar or chat with the Gemini-powered agent; either path saves plans into `st.session_state` for downstream pages.
-  - **Grocery List** - Build categorized items from the current plan and download a CSV via `tools.grocery_list.export_csv`.
   - **Cooking Assistant** - Chat about recipes or macro goals; the page retrieves matching documents from FAISS and prompts Gemini to return grounded steps and macro tables.
-  - **Progress Dashboard** - Summarize the last seven days with SQLite rollups and visualize macros using Streamlit charts.
 
 ## Data, Storage & Privacy
 
 - **Nutrition reference** (`data/raw/nutrition_reference.json`) powers gram-based logging; you can append to it in the UI or edit the JSON directly.
 - **Recipe datasets** (`data/raw/recipes_sample.csv` and `data/raw/healthy_meal_plans.csv`) feed both planning and the FAISS retrieval pipeline. Replace or extend them with your own CSV files to customize suggestions.
 - **Local persistence** - Logged meals live in `data/processed/nutritrackai.db` and never leave your machine. FAISS metadata/vectors are stored under `data/processed/faiss_index`.
-- Keep `.env` and any exported data files (e.g., grocery CSVs) out of version control to avoid leaking personal information or API keys.
+- Keep `.env` and any exported data files (e.g., plan summaries) out of version control to avoid leaking personal information or API keys.
 
 ## Testing
 

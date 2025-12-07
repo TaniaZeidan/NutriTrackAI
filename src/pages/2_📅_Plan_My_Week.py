@@ -266,25 +266,15 @@ def main() -> None:
         plan_table(st.session_state["weekly_plan"])
         
         # Actions
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            if st.button("🛒 Generate Grocery List", use_container_width=True):
-                from tools.grocery_list import build_list_from_plan
-                groceries = build_list_from_plan(st.session_state["weekly_plan"])
-                st.session_state["groceries"] = groceries
-                st.success("Grocery list ready! Check the Grocery List page.")
-        
-        with col2:
-            if "plan_summary" in st.session_state:
-                summary = st.session_state["plan_summary"]
-                st.download_button(
-                    "📄 Download Plan",
-                    data=summary,
-                    file_name="meal_plan.txt",
-                    mime="text/plain",
-                    use_container_width=True
-                )
+        if "plan_summary" in st.session_state:
+            summary = st.session_state["plan_summary"]
+            st.download_button(
+                "Download Plan",
+                data=summary,
+                file_name="meal_plan.txt",
+                mime="text/plain",
+                use_container_width=True
+            )
     else:
         st.info(
             "👆 Fill in your profile in the sidebar and click "
