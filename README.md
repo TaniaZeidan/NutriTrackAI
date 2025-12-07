@@ -1,13 +1,13 @@
 # NutriTrackAI
 
-NutriTrackAI is a multi-page Streamlit application for logging meals, tracking macros, planning weekly menus, and getting guided cooking help. The project pairs local tooling (SQLite, FAISS, nutrition reference data) with LangChain/Gemini integrations so it runs offline by default but can call Gemini when a Google API key is available.
+NutriTrackAI is a multi-page Streamlit application for logging meals, planning weekly menus, and getting grounded cooking help. The app pairs local datasets (SQLite, FAISS, nutrition reference JSON/CSVs) with a LangChain agent that wraps Gemini Pro so you can run offline by default and switch to live LLM responses when a Google API key is available.
 
 ## Feature Highlights
-- **Food logging & macro tracking** - Log gram-based foods from a curated reference, extend the dataset when items are missing, and view totals and trends backed by SQLite (`data/processed/nutritrackai.db`).
-- **Weekly planning** - Generate macro-aware plans either manually or by chatting with the NutriTrack agent, then summarize them in the UI.
-- **Grounded cooking assistant** - Conversationally request recipes; the app retrieves relevant documents from the FAISS index (built from `recipes_sample.csv` plus `healthy_meal_plans.csv`) and asks Gemini for a grounded, macro-aware response.
-- **Conversation & agent layer** - `src/agent` wires LangChain tools and optional Gemini models so you can orchestrate the calorie tracker, planner, and cooking helpers through a single agent facade.
-- **All-local datasets** - Recipes and nutrition references live under `data/raw`, while FAISS artifacts and the SQLite database remain in `data/processed`.
+- **Daily Log (deterministic)** – Gram-based logging backed by SQLite (`data/processed/nutritrackai.db`) and a nutrition reference JSON. No LLM involvement.
+- **Plan My Week (deterministic + narrated)** – Calculates BMR/TDEE/macros with pure Python, builds a weekly plan, then optionally asks the NutriTrack agent to rewrite the summary in natural language.
+- **Cooking Assistant (LLM agent)** – Conversational assistant backed by the NutriTrackAgent (LangChain + Gemini Pro) that can call tools for recipe RAG, macro targets, and ingredient weights.
+- **RAG pipeline** – FAISS index over `data/raw/recipes_sample.csv` and `data/raw/healthy_meal_plans.csv`. Uses Gemini `text-embedding-004` when an API key is present, with a deterministic hash embedding fallback when offline.
+- **Tooling surface** – The agent exposes at least three tools: `cooking_rag` (recipe search + macros), `macro_targets` (BMR/TDEE/macro calculator), and `ingredient_weights` (gram estimates from the nutrition reference).
 
 ## Repository Layout
 
@@ -18,12 +18,11 @@ NutriTrackAI/
 |   `-- processed/         # nutritrackai.db, faiss_index/*
 |-- src/
 |   |-- app.py             # Streamlit entrypoint + page routing
-|   |-- pages/             # Daily Log, Plan My Week, Cooking
-|   |-- core/              # config, schemas, db, utils, prompts, embeddings, llm
-|   |-- tools/             # calorie tracker, planner, cooking helpers
-|   |-- agent/             # LangChain/Gemini orchestration
+|   |-- pages/             # Daily Log, Plan My Week, Cooking Assistant
+|   |-- core/              # config, schemas, db, utils, prompts, embeddings, llm, rag
+|   |-- tools/             # calorie tracker, planner, cooking helpers, LangChain tool registry
+|   |-- agent/             # NutriTrackAgent orchestration and helpers
 |   `-- ui/                # shared Streamlit components
-|-- tests/                 # pytest coverage for macros, RAG, and tools
 |-- requirements.txt
 `-- README.md
 ```
@@ -41,10 +40,10 @@ python -m venv venv
 venv\Scripts\activate        # or: source venv/bin/activate
 pip install -r requirements.txt
 
-echo GOOGLE_API_KEY=your_key_here > .env  # required for Gemini features
+echo GOOGLE_API_KEY=your_key_here > .env  # optional; enables live Gemini + embeddings
 ```
 
-The app loads `.env` via `src/config.py`. If `GOOGLE_API_KEY` is absent, the Gemini client falls back to deterministic offline responses so you can still exercise the UI and tools.
+`src/config.py` loads `.env`. If `GOOGLE_API_KEY` is absent, Gemini calls fall back to deterministic offline responses and hash-based embeddings so you can still exercise the UI and tools.
 
 ## Running the App
 
@@ -52,40 +51,41 @@ The app loads `.env` via `src/config.py`. If `GOOGLE_API_KEY` is absent, the Gem
 streamlit run src/app.py
 ```
 
-What to expect:
+On first launch a FAISS index is created from the files in `data/raw/`. You can rebuild later from the sidebar button or via:
 
-- On first launch a FAISS index is created from the files in `data/raw/` (both `recipes_sample.csv` and `healthy_meal_plans.csv`, handled by `core.embeddings.build_index`). You can force a rebuild later with:
+```bash
+python - <<'PY'
+import sys
+sys.path.append("src")
+from core.embeddings import build_index
+build_index(force=True)
+PY
+```
 
-  ```bash
-  python -c "from src.core.embeddings import build_index; build_index(force=True)"
-  ```
-
-- Streamlit pages live in `src/pages` and show up in the left sidebar:
-  - **Daily Meal Log** - Log foods by grams, calculate macros with the nutrition reference, and view per-meal breakdowns with delete actions.
-  - **Plan My Week** - Adjust macro targets in the sidebar or chat with the Gemini-powered agent; either path saves plans into `st.session_state` for downstream pages.
-  - **Cooking Assistant** - Chat about recipes or macro goals; the page retrieves matching documents from FAISS and prompts Gemini to return grounded steps and macro tables.
+### Pages and Agent Mapping
+- **📋 Daily Log** – Purely local logging; SQLite-backed; unchanged by the agent.
+- **📅 Plan My Week** – Deterministic macro math + plan generator; summary text may be rewritten by the NutriTrack agent (LangChain + Gemini Pro) while tables and totals remain deterministic.
+- **👩‍🍳 Cooking Assistant** – Fully LLM-powered chat. The agent uses ConversationBufferMemory, Gemini Pro chat, and tools (`cooking_rag`, `macro_targets`, `ingredient_weights`) to fetch recipes, scale ingredients, and present macros in natural language.
 
 ## Data, Storage & Privacy
 
-- **Nutrition reference** (`data/raw/nutrition_reference.json`) powers gram-based logging; you can append to it in the UI or edit the JSON directly.
+- **Nutrition reference** (`data/raw/nutrition_reference.json`) powers gram-based logging; you can append via the UI or edit JSON directly.
 - **Recipe datasets** (`data/raw/recipes_sample.csv` and `data/raw/healthy_meal_plans.csv`) feed both planning and the FAISS retrieval pipeline. Replace or extend them with your own CSV files to customize suggestions.
-- **Local persistence** - Logged meals live in `data/processed/nutritrackai.db` and never leave your machine. FAISS metadata/vectors are stored under `data/processed/faiss_index`.
+- **Local persistence** – Logged meals live in `data/processed/nutritrackai.db` and never leave your machine. FAISS metadata/vectors are stored under `data/processed/faiss_index`.
 - Keep `.env` and any exported data files (e.g., plan summaries) out of version control to avoid leaking personal information or API keys.
 
 ## Testing
-
-Run the automated suite anytime you touch the core logic:
 
 ```bash
 pytest -q
 ```
 
-The tests cover macro utilities, the FAISS retrieval helpers, and high-level tool behavior so regressions are caught early.
+The tests cover macro utilities, retrieval helpers, and tool behavior so regressions are caught early.
 
 ## Troubleshooting
 
-- **Missing nutrition reference** - Ensure `data/raw/nutrition_reference.json` exists; the Daily Log page relies on it for lookups.
-- **FAISS complaints** - `faiss-cpu` and `numpy` are optional; the app falls back to pure-Python similarity scoring but you may reinstall FAISS if you need the native index.
-- **Gemini errors** - Verify `GOOGLE_API_KEY` is set and that the Generative AI API is enabled for your project.
+- **Missing nutrition reference** – Ensure `data/raw/nutrition_reference.json` exists; the Daily Log page relies on it.
+- **FAISS complaints** – `faiss-cpu` and `numpy` are optional; the app falls back to pure-Python similarity scoring but you may reinstall FAISS if you need the native index.
+- **Gemini errors** – Verify `GOOGLE_API_KEY` is set and that the Generative AI API is enabled for your project. Without a key, the app automatically switches to offline fallbacks (hash embeddings + deterministic text).
 
-With the README in sync, you can confidently develop new Streamlit pages, extend LangChain tooling, or swap in production-ready datasets without guessing how the current system hangs together.
+With this setup, you can confidently develop new Streamlit pages, extend LangChain tooling, or swap in production-ready datasets without guessing how the system hangs together.

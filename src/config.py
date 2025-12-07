@@ -18,21 +18,21 @@ FAISS_INDEX_DIR = PROCESSED_DATA_DIR / "faiss_index"
 DEFAULT_DB_PATH = PROCESSED_DATA_DIR / "nutritrackai.db"
 ENV_FILE = ROOT_DIR / ".env"
 
-EMBEDDING_MODEL = "text-embedding-004"
-CHAT_MODEL = "gemini-2.5-pro"
+EMBEDDING_MODEL = "models/text-embedding-004"
+CHAT_MODEL = "models/gemini-2.0-flash-exp"  # Using available model
 
 
-def get_google_api_key() -> str:
-    """Return the Google API key or raise a helpful error."""
-    print("Attempting to get API KEY")
+def get_google_api_key(raise_on_missing: bool = False) -> Optional[str]:
+    """Return the Google API key if set, otherwise None (or raise when requested)."""
     key = os.getenv("GOOGLE_API_KEY")
-    if not key:
+    if key:
+        return key
+    if raise_on_missing:
         raise RuntimeError(
             "Missing GOOGLE_API_KEY environment variable. "
             "Set it in a .env file or the environment."
         )
-    print("API Key successfully retrieved")
-    return key
+    return None
 
 
 def get_env(name: str, default: Optional[str] = None) -> str:

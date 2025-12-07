@@ -4,14 +4,16 @@ from __future__ import annotations
 import streamlit as st
 
 from core.embeddings import build_index
-from core.rag import search_recipes
 from tools.meal_planner import generate_plan
 from core.schemas import MacroTargets
 
 
 st.set_page_config(page_title="NutriTrackAI", page_icon="🥗", layout="wide")
 
-st.sidebar.image("https://raw.githubusercontent.com/streamlit/brand/main/logomark/streamlit-mark-color.png", width=80)
+st.sidebar.image(
+    "https://raw.githubusercontent.com/streamlit/brand/main/logomark/streamlit-mark-color.png",
+    width=80,
+)
 st.sidebar.title("NutriTrackAI")
 
 if st.sidebar.button("Rebuild Recipe Index"):
@@ -19,7 +21,7 @@ if st.sidebar.button("Rebuild Recipe Index"):
         build_index(force=True)
         st.success("Index rebuilt.")
 
-# ensure index exists on start
+# Ensure index exists on start
 build_index()
 
 if "weekly_plan" not in st.session_state:

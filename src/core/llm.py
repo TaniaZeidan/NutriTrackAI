@@ -18,11 +18,7 @@ class GeminiClient:
     """Wrapper around the Gemini API with graceful degradation."""
 
     def __init__(self, api_key: Optional[str] = None) -> None:
-        try:
-            self.api_key = api_key or get_google_api_key()
-        except RuntimeError:
-            self.api_key = None
-        
+        self.api_key = api_key or get_google_api_key()
         if self.api_key and genai:
             genai.configure(api_key=self.api_key)
             self._offline = False
@@ -34,12 +30,32 @@ class GeminiClient:
         """Generate text using Gemini or an offline fallback."""
         if self._offline:
             return self._offline_response(prompt)
-        
+
         assert genai is not None
-        
+
         try:
-            model = genai.GenerativeModel(model_name=CHAT_MODEL)
-            response = model.generate_content(prompt, **kwargs)
+            # Configure generation parameters to reduce hallucination
+            generation_config = {
+                "temperature": kwargs.get("temperature", 0.3),  # Lower temperature = more factual
+                "top_p": kwargs.get("top_p", 0.8),  # Reduce sampling diversity
+                "top_k": kwargs.get("top_k", 40),  # Limit token selection
+                "max_output_tokens": kwargs.get("max_output_tokens", 2048),
+            }
+
+            # Add safety settings to prevent harmful content
+            safety_settings = [
+                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+            ]
+
+            model = genai.GenerativeModel(
+                model_name=CHAT_MODEL,
+                generation_config=generation_config,
+                safety_settings=safety_settings,
+            )
+            response = model.generate_content(prompt)
             return response.text or ""
         except Exception as e:
             # Fallback to offline if API fails

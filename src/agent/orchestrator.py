@@ -1,10 +1,15 @@
 """Agent orchestration using LangChain."""
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 try:  # pragma: no cover - optional dependencies
-    from langchain.agents import AgentExecutor, initialize_agent, Tool
+    from langchain.agents import (
+        AgentExecutor,
+        AgentType,
+        Tool,
+        initialize_agent,
+    )
     from langchain.memory import ConversationBufferMemory
 except Exception:  # pragma: no cover
     AgentExecutor = None  # type: ignore
@@ -23,6 +28,7 @@ except Exception:
         ChatGoogleGenerativeAI = None  # type: ignore
 
 
+from config import CHAT_MODEL
 from core.llm import GeminiClient
 from core.memory import ConversationMemory, PreferenceMemory
 from core.prompts import SYSTEM_PROMPT
@@ -42,22 +48,33 @@ class NutriTrackAgent:
         self.gemini = gemini or GeminiClient()
         self.conversation = conversation or ConversationMemory()
         self.preferences = preferences or PreferenceMemory()
+        self.memory: Optional[ConversationBufferMemory] = None
         self._executor = self._build_executor()
 
     def _build_executor(self):  # pragma: no cover - mostly integration logic
         if AgentExecutor and ChatGoogleGenerativeAI:
-            memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-            llm = ChatGoogleGenerativeAI(model="gemini-pro")
-            agent = initialize_agent(
-                tools=self.tools,
-                llm=llm,
-                agent="chat-conversational-react-description",
-                verbose=False,
-                memory=memory,
-                handle_parsing_errors=True,
-                agent_kwargs={"system_message": SYSTEM_PROMPT},
-            )
-            return agent
+            try:
+                self.memory = ConversationBufferMemory(
+                    memory_key="chat_history",
+                    return_messages=True,
+                )
+                llm = ChatGoogleGenerativeAI(
+                    model=CHAT_MODEL,
+                    convert_system_message_to_human=True,
+                )
+                agent = initialize_agent(
+                    tools=self.tools,
+                    llm=llm,
+                    agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
+                    verbose=False,
+                    memory=self.memory,
+                    handle_parsing_errors=True,
+                    agent_kwargs={"system_message": SYSTEM_PROMPT},
+                )
+                return agent
+            except Exception as exc:
+                print(f"Failed to initialize LangChain agent, falling back to GeminiClient: {exc}")
+                return None
         return None
 
     def run(self, prompt: str) -> str:

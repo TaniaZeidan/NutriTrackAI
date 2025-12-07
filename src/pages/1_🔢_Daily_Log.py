@@ -1,11 +1,10 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from datetime import date
+from typing import Dict
 
 import streamlit as st
-
-from collections import defaultdict
-from typing import Dict
 
 from core.db import Database
 from tools.calorie_tracker import (
@@ -72,7 +71,7 @@ def _render_day_summary(db: Database, day: date) -> None:
                         f"P {item.protein_g:.1f}g / C {item.carb_g:.1f}g / F {item.fat_g:.1f}g)"
                     )
             with cols[1]:
-                if st.button("✕", key=f"delete-meal-{meal_id}", help="Remove this entry"):
+                if st.button("🗑️", key=f"delete-meal-{meal_id}", help="Remove this entry"):
                     db.delete_meal(meal_id)
                     st.experimental_rerun()
 
