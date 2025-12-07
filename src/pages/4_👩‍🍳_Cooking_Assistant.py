@@ -1,4 +1,4 @@
-"""Enhanced Cooking Assistant page with proper agent integration."""
+"""Enhanced Cooking Assistant page with beautiful chat UI."""
 from __future__ import annotations
 
 import streamlit as st
@@ -54,19 +54,26 @@ def _process_message(prompt: str) -> None:
 
 
 def main() -> None:
-    st.title("🍳 Cooking Assistant")
-    st.caption(
-        "Your AI-powered cooking companion. Ask for recipes, cooking instructions, "
-        "ingredient amounts, and get detailed macro information for every meal."
-    )
+    # Page header
+    st.markdown("""
+    <div style="margin-bottom: 2rem;">
+        <h1 style="margin-bottom: 0.5rem;">👩‍🍳 Cooking Assistant</h1>
+        <p style="color: #52796F; font-size: 1.1rem;">Your AI-powered cooking companion for recipes, instructions, and nutrition info.</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     _ensure_session()
     
     # Sidebar controls
     with st.sidebar:
-        st.header("Settings")
+        st.markdown("""
+        <div style="padding: 0.5rem 0.5rem 0.5rem 0.5rem;">
+            <p style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: #94A3B8; margin: 0 0 0.5rem 0; font-weight: 600;">⚙️ Settings</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
         servings = st.number_input(
-            "Target servings",
+            "🍽️ Target Servings",
             min_value=1,
             max_value=8,
             value=st.session_state["cooking_servings"],
@@ -75,75 +82,158 @@ def main() -> None:
         )
         st.session_state["cooking_servings"] = int(servings)
         
-        st.divider()
+        st.caption("📊 Macros calculated per serving")
         
-        st.subheader("Quick Actions")
+        st.markdown("---")
         
-        # Quick action buttons - NOW WITH PROPER PROCESSING
-        if st.button("🔍 Search Recipes", use_container_width=True):
+        st.markdown("""
+        <p style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: #94A3B8; margin: 0 0 0.75rem 0; font-weight: 600;">⚡ Quick Actions</p>
+        """, unsafe_allow_html=True)
+        
+        # Quick action buttons
+        if st.button("🔍 Search Healthy Recipes", use_container_width=True):
             _process_message("Show me some healthy high-protein recipes")
             st.rerun()
         
-        if st.button("🥗 Healthy Meals", use_container_width=True):
+        if st.button("🥗 Low Calorie Meals", use_container_width=True):
             _process_message("Give me healthy meal ideas under 500 calories")
             st.rerun()
         
-        if st.button("💪 High Protein", use_container_width=True):
+        if st.button("💪 High Protein Options", use_container_width=True):
             _process_message("Show me high protein recipes with at least 30g protein per serving")
             st.rerun()
         
-        st.divider()
+        if st.button("🥬 Vegetarian Ideas", use_container_width=True):
+            _process_message("Show me vegetarian recipes")
+            st.rerun()
         
-        if st.button("🗑️ Clear Chat", use_container_width=True):
+        st.markdown("---")
+        
+        if st.button("🗑️ Clear Chat History", use_container_width=True):
             st.session_state["cooking_chat"] = []
             st.rerun()
     
-    # Display chat history
+    # Main chat area
     history = st.session_state["cooking_chat"]
     
     if not history:
-        st.info("👋 Welcome! Ask me anything about cooking, recipes, or ingredients.")
+        # Welcome state
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, #2D6A4F 0%, #40916C 100%); padding: 2rem; border-radius: 20px; color: white; text-align: center; margin-bottom: 2rem;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">👨‍🍳</div>
+            <h2 style="color: white !important; margin-bottom: 0.5rem;">Welcome to Your AI Chef!</h2>
+            <p style="opacity: 0.9; max-width: 500px; margin: 0 auto;">
+                Ask me anything about cooking, recipes, or ingredients. I'll help you with detailed instructions and nutrition information!
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
         
-        st.markdown("### Try asking:")
-        st.markdown("- *How do I make Grilled Chicken Bowl?*")
-        st.markdown("- *Give me a high-protein recipe with salmon*")
-        st.markdown("- *What are the ingredients and amounts for Greek Yogurt Parfait?*")
-        st.markdown("- *Show me vegetarian recipes*")
+        # Suggestion cards
+        st.markdown("""
+        <h4 style="color: #2D6A4F; margin-bottom: 1rem;">💬 Try asking me...</h4>
+        """, unsafe_allow_html=True)
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("""
+            <div style="background: white; padding: 1.5rem; border-radius: 14px; margin-bottom: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid #E8F5E9;">
+                <p style="color: #2D6A4F; font-weight: 600; margin-bottom: 0.5rem;">🍗 Recipe Instructions</p>
+                <p style="color: #6B7280; font-size: 0.9rem; margin: 0;">"How do I make Grilled Chicken Bowl?"</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("""
+            <div style="background: white; padding: 1.5rem; border-radius: 14px; margin-bottom: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid #E8F5E9;">
+                <p style="color: #2D6A4F; font-weight: 600; margin-bottom: 0.5rem;">🥗 Diet-Specific</p>
+                <p style="color: #6B7280; font-size: 0.9rem; margin: 0;">"Show me vegetarian high-protein recipes"</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown("""
+            <div style="background: white; padding: 1.5rem; border-radius: 14px; margin-bottom: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid #E8F5E9;">
+                <p style="color: #2D6A4F; font-weight: 600; margin-bottom: 0.5rem;">🐟 Ingredient-Based</p>
+                <p style="color: #6B7280; font-size: 0.9rem; margin: 0;">"Give me a recipe with salmon"</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("""
+            <div style="background: white; padding: 1.5rem; border-radius: 14px; margin-bottom: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid #E8F5E9;">
+                <p style="color: #2D6A4F; font-weight: 600; margin-bottom: 0.5rem;">📊 Nutrition Info</p>
+                <p style="color: #6B7280; font-size: 0.9rem; margin: 0;">"What are the macros for Greek Yogurt Parfait?"</p>
+            </div>
+            """, unsafe_allow_html=True)
     
-    for message in history:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+    else:
+        # Display chat history with enhanced styling
+        for message in history:
+            if message["role"] == "user":
+                st.markdown(f"""
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                    <div style="background: linear-gradient(135deg, #2D6A4F 0%, #40916C 100%); color: white; padding: 1rem 1.25rem; border-radius: 18px 18px 4px 18px; max-width: 80%; box-shadow: 0 2px 10px rgba(45,106,79,0.2);">
+                        <p style="margin: 0;">{message["content"]}</p>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+                <div style="display: flex; justify-content: flex-start; margin-bottom: 1rem;">
+                    <div style="background: white; padding: 1rem 1.25rem; border-radius: 18px 18px 18px 4px; max-width: 85%; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #E8F5E9;">
+                        <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                            <span style="font-size: 1.25rem; margin-right: 0.5rem;">👩‍🍳</span>
+                            <span style="color: #2D6A4F; font-weight: 600; font-size: 0.9rem;">NutriTrack Chef</span>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                st.markdown(message["content"])
+                st.markdown("<br>", unsafe_allow_html=True)
     
     # Chat input
-    if prompt := st.chat_input("Ask for a recipe, cooking instructions, or ingredient amounts..."):
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    if prompt := st.chat_input("Ask for a recipe, cooking instructions, or nutrition info..."):
         # Display user message immediately
-        with st.chat_message("user"):
-            st.markdown(prompt)
+        st.markdown(f"""
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+            <div style="background: linear-gradient(135deg, #2D6A4F 0%, #40916C 100%); color: white; padding: 1rem 1.25rem; border-radius: 18px 18px 4px 18px; max-width: 80%;">
+                <p style="margin: 0;">{prompt}</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
         # Process and get response
-        with st.chat_message("assistant"):
-            with st.spinner("🔍 Searching recipes and preparing your answer..."):
-                agent = st.session_state.get("cooking_agent")
-                servings = st.session_state["cooking_servings"]
-                
-                if agent:
-                    try:
-                        response = agent.chat(prompt, servings=servings)
-                        st.markdown(response)
-                    except Exception as e:
-                        error_msg = (
-                            f"I encountered an error: {str(e)}\n\n"
-                            "Please try:\n"
-                            "- Rephrasing your question\n"
-                            "- Asking about a specific recipe name\n"
-                            "- Checking if your API key is set correctly"
-                        )
-                        st.error(str(e))
-                        st.markdown(error_msg)
-                        response = error_msg
-                else:
-                    response = "Cooking agent is not available. Please restart the app."
-                    st.error(response)
+        with st.spinner("🔍 Searching recipes and preparing your answer..."):
+            agent = st.session_state.get("cooking_agent")
+            servings = st.session_state["cooking_servings"]
+            
+            if agent:
+                try:
+                    response = agent.chat(prompt, servings=servings)
+                except Exception as e:
+                    response = (
+                        f"I encountered an error: {str(e)}\n\n"
+                        "Please try:\n"
+                        "- Rephrasing your question\n"
+                        "- Asking about a specific recipe name\n"
+                        "- Checking if your API key is set correctly"
+                    )
+            else:
+                response = "Cooking agent is not available. Please restart the app."
+        
+        # Display response
+        st.markdown(f"""
+        <div style="display: flex; justify-content: flex-start; margin-bottom: 1rem;">
+            <div style="background: white; padding: 1rem 1.25rem; border-radius: 18px 18px 18px 4px; max-width: 85%; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #E8F5E9;">
+                <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="font-size: 1.25rem; margin-right: 0.5rem;">👩‍🍳</span>
+                    <span style="color: #2D6A4F; font-weight: 600; font-size: 0.9rem;">NutriTrack Chef</span>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        st.markdown(response)
         
         # Save to history
         st.session_state["cooking_chat"].append({"role": "user", "content": prompt})

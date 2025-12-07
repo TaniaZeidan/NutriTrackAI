@@ -1,4 +1,4 @@
-"""Enhanced Meal Planning page with personalized calculations."""
+"""Enhanced Meal Planning page with personalized calculations and beautiful UI."""
 from __future__ import annotations
 
 from typing import Literal
@@ -25,22 +25,28 @@ def _ensure_session() -> None:
 
 
 def main() -> None:
-    st.title("📅 Personalized Meal Planner")
-    st.caption(
-        "Get a customized meal plan based on your body metrics and fitness goals. "
-        "The AI calculates your exact calorie needs and creates a balanced weekly plan."
-    )
+    # Page header
+    st.markdown("""
+    <div style="margin-bottom: 2rem;">
+        <h1 style="margin-bottom: 0.5rem;">📅 Personalized Meal Planner</h1>
+        <p style="color: #52796F; font-size: 1.1rem;">Get a customized meal plan based on your body metrics and fitness goals.</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     _ensure_session()
     
-    # Sidebar: User Profile
+    # Sidebar: User Profile with clean styling
     with st.sidebar:
-        st.header("Your Profile")
+        st.markdown("""
+        <div style="padding: 0.5rem 0.5rem 0.75rem 0.5rem; margin-bottom: 0.5rem;">
+            <p style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: #94A3B8; margin: 0 0 0.5rem 0; font-weight: 600;">👤 Your Profile</p>
+        </div>
+        """, unsafe_allow_html=True)
         
         profile = st.session_state["user_profile"]
         
         weight = st.number_input(
-            "Weight (kg)",
+            "⚖️ Weight (kg)",
             min_value=30.0,
             max_value=200.0,
             value=profile["weight_kg"],
@@ -49,7 +55,7 @@ def main() -> None:
         )
         
         height = st.number_input(
-            "Height (cm)",
+            "📏 Height (cm)",
             min_value=100.0,
             max_value=250.0,
             value=profile["height_cm"],
@@ -58,7 +64,7 @@ def main() -> None:
         )
         
         age = st.number_input(
-            "Age (years)",
+            "🎂 Age (years)",
             min_value=15,
             max_value=100,
             value=profile["age"],
@@ -67,11 +73,18 @@ def main() -> None:
         )
         
         sex = st.selectbox(
-            "Sex",
+            "⚧ Sex",
             options=["male", "female"],
             index=0 if profile["sex"] == "male" else 1,
-            help="Biological sex affects BMR calculation"
+            help="Biological sex affects BMR calculation",
+            format_func=lambda x: "♂️ Male" if x == "male" else "♀️ Female"
         )
+        
+        st.markdown("---")
+        
+        st.markdown("""
+        <p style="font-size: 0.75rem; color: #64748B; margin: 0 0 0.25rem 0;">🏃 Activity Level</p>
+        """, unsafe_allow_html=True)
         
         activity_level = st.selectbox(
             "Activity Level",
@@ -83,51 +96,60 @@ def main() -> None:
                 "very_active"
             ],
             index=2,
-            help=(
-                "Sedentary: Little/no exercise\n"
-                "Light: 1-3 days/week\n"
-                "Moderate: 3-5 days/week\n"
-                "Active: 6-7 days/week\n"
-                "Very Active: Physical job + training"
-            )
+            label_visibility="collapsed",
+            format_func=lambda x: {
+                "sedentary": "🛋️ Sedentary (Little/no exercise)",
+                "light": "🚶 Light (1-3 days/week)",
+                "moderate": "🏃 Moderate (3-5 days/week)",
+                "active": "💪 Active (6-7 days/week)",
+                "very_active": "🔥 Very Active (Physical job + training)"
+            }[x]
         )
+        
+        st.markdown("""
+        <p style="font-size: 0.75rem; color: #64748B; margin: 1rem 0 0.25rem 0;">🎯 Fitness Goal</p>
+        """, unsafe_allow_html=True)
         
         goal = st.selectbox(
             "Goal",
             options=["lose_fat", "maintain", "gain_muscle"],
             index=1,
+            label_visibility="collapsed",
             format_func=lambda x: {
-                "lose_fat": "🔥 Lose Fat",
+                "lose_fat": "🔥 Lose Fat (-500 kcal)",
                 "maintain": "⚖️ Maintain Weight",
-                "gain_muscle": "💪 Gain Muscle"
+                "gain_muscle": "💪 Gain Muscle (+300 kcal)"
             }[x]
         )
         
-        st.divider()
+        st.markdown("---")
         
-        st.subheader("Plan Settings")
+        st.markdown("""
+        <p style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: #94A3B8; margin: 0 0 0.5rem 0; font-weight: 600;">📋 Plan Settings</p>
+        """, unsafe_allow_html=True)
         
         days = st.selectbox(
             "Plan Duration",
             options=[3, 5, 7],
             index=2,
-            format_func=lambda x: f"{x} days"
+            format_func=lambda x: f"📆 {x} days"
         )
         
         meals_per_day = st.selectbox(
             "Meals Per Day",
             options=[3, 4],
-            index=0
+            index=0,
+            format_func=lambda x: f"🍽️ {x} meals/day"
         )
         
         diet_tags = st.text_input(
-            "Dietary Preferences",
+            "🥗 Dietary Preferences",
             placeholder="e.g., vegetarian, high-protein",
             help="Comma-separated tags like 'vegetarian, high-protein, keto'"
         )
         
         exclusions = st.text_input(
-            "Food Exclusions",
+            "🚫 Food Exclusions",
             placeholder="e.g., dairy, gluten",
             help="Comma-separated foods to avoid"
         )
@@ -142,14 +164,19 @@ def main() -> None:
             "goal": goal
         })
     
-    # Main content
+    # Main content area
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.subheader("Generate Your Plan")
+        st.markdown("""
+        <div style="background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 1.5rem;">
+            <h3 style="color: #2D6A4F; margin-bottom: 1rem;">🧮 Generate Your Personalized Plan</h3>
+            <p style="color: #52796F;">Fill in your profile in the sidebar, then click the button below to calculate your personalized nutrition targets and generate a meal plan.</p>
+        </div>
+        """, unsafe_allow_html=True)
         
-        if st.button("🎯 Calculate & Generate Plan", use_container_width=True, type="primary"):
-            with st.spinner("Calculating your personalized nutrition targets..."):
+        if st.button("🎯 Calculate & Generate My Plan", use_container_width=True, type="primary"):
+            with st.spinner("🔄 Calculating your personalized nutrition targets..."):
                 try:
                     agent = st.session_state["planning_agent"]
                     
@@ -174,98 +201,172 @@ def main() -> None:
                     st.rerun()
                     
                 except Exception as e:
-                    st.error(f"Error generating plan: {str(e)}")
+                    st.error(f"❌ Error generating plan: {str(e)}")
     
     with col2:
         if "plan_targets" in st.session_state:
             targets = st.session_state["plan_targets"]
             
-            st.metric("BMR", f"{targets['bmr']:.0f} kcal")
-            st.metric("TDEE", f"{targets['tdee']:.0f} kcal")
-            st.metric("Target Calories", f"{targets['target_calories']} kcal")
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 100%); padding: 1.5rem; border-radius: 16px; color: white;">
+                <h4 style="color: white !important; margin-bottom: 1rem; opacity: 0.9;">📊 Quick Stats</h4>
+                <div style="margin-bottom: 0.75rem;">
+                    <span style="opacity: 0.7; font-size: 0.85rem;">BMR</span>
+                    <h3 style="color: #95D5B2 !important; margin: 0;">{targets['bmr']:.0f} kcal</h3>
+                </div>
+                <div style="margin-bottom: 0.75rem;">
+                    <span style="opacity: 0.7; font-size: 0.85rem;">TDEE</span>
+                    <h3 style="color: #95D5B2 !important; margin: 0;">{targets['tdee']:.0f} kcal</h3>
+                </div>
+                <div>
+                    <span style="opacity: 0.7; font-size: 0.85rem;">Target</span>
+                    <h3 style="color: #52B788 !important; margin: 0;">{targets['target_calories']} kcal</h3>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown("""
+            <div style="background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%); padding: 1.5rem; border-radius: 16px; text-align: center;">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📋</div>
+                <p style="color: #6B7280; margin: 0; font-size: 0.9rem;">Generate a plan to see your stats here</p>
+            </div>
+            """, unsafe_allow_html=True)
     
     # Display existing plan
     if "weekly_plan" in st.session_state and st.session_state["weekly_plan"]:
-        st.divider()
+        st.markdown("---")
         
-        # Show targets
+        # Show targets in an expander
         if "plan_targets" in st.session_state:
-            with st.expander("📊 Your Nutrition Targets", expanded=True):
+            with st.expander("📊 Your Nutrition Targets - Click to expand", expanded=True):
                 targets = st.session_state["plan_targets"]
                 
+                # Macro cards
                 col1, col2, col3, col4 = st.columns(4)
                 
                 with col1:
-                    st.metric("Daily Calories", f"{targets['target_calories']} kcal")
+                    st.markdown(f"""
+                    <div style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); padding: 1.25rem; border-radius: 14px; text-align: center;">
+                        <p style="color: #92400E; font-size: 0.8rem; margin: 0;">🔥 Daily Calories</p>
+                        <h2 style="color: #78350F; margin: 0.5rem 0 0 0; font-size: 1.6rem;">{targets['target_calories']}</h2>
+                        <p style="color: #A16207; font-size: 0.75rem; margin: 0;">kcal</p>
+                    </div>
+                    """, unsafe_allow_html=True)
                 
                 with col2:
-                    protein_cals = targets['protein_g'] * 4
                     protein_per_kg = targets.get('protein_per_kg', 0)
-                    st.metric(
-                        "Protein", 
-                        f"{targets['protein_g']}g",
-                        f"{protein_per_kg}g/kg · {protein_cals} kcal"
-                    )
+                    st.markdown(f"""
+                    <div style="background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); padding: 1.25rem; border-radius: 14px; text-align: center;">
+                        <p style="color: #1E40AF; font-size: 0.8rem; margin: 0;">💪 Protein</p>
+                        <h2 style="color: #1E3A8A; margin: 0.5rem 0 0 0; font-size: 1.6rem;">{targets['protein_g']}g</h2>
+                        <p style="color: #3B82F6; font-size: 0.75rem; margin: 0;">{protein_per_kg}g/kg</p>
+                    </div>
+                    """, unsafe_allow_html=True)
                 
                 with col3:
-                    carb_cals = targets['carb_g'] * 4
-                    st.metric("Carbs", f"{targets['carb_g']}g", f"{carb_cals} kcal")
+                    st.markdown(f"""
+                    <div style="background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); padding: 1.25rem; border-radius: 14px; text-align: center;">
+                        <p style="color: #065F46; font-size: 0.8rem; margin: 0;">🍞 Carbs</p>
+                        <h2 style="color: #064E3B; margin: 0.5rem 0 0 0; font-size: 1.6rem;">{targets['carb_g']}g</h2>
+                        <p style="color: #10B981; font-size: 0.75rem; margin: 0;">{targets['carb_g'] * 4} kcal</p>
+                    </div>
+                    """, unsafe_allow_html=True)
                 
                 with col4:
+                    st.markdown(f"""
+                    <div style="background: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%); padding: 1.25rem; border-radius: 14px; text-align: center;">
+                        <p style="color: #9D174D; font-size: 0.8rem; margin: 0;">🥑 Fat</p>
+                        <h2 style="color: #831843; margin: 0.5rem 0 0 0; font-size: 1.6rem;">{targets['fat_g']}g</h2>
+                        <p style="color: #EC4899; font-size: 0.75rem; margin: 0;">{targets['fat_g'] * 9} kcal</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+                
+                # Goal info card
+                goal_text = targets['goal'].replace('_', ' ').title()
+                activity_text = targets['activity_level'].replace('_', ' ').title()
+                
+                st.markdown(f"""
+                <div style="background: linear-gradient(135deg, #2D6A4F 0%, #40916C 100%); padding: 1.25rem; border-radius: 14px; color: white;">
+                    <div style="display: flex; justify-content: space-around; text-align: center;">
+                        <div>
+                            <span style="opacity: 0.7; font-size: 0.85rem;">🎯 Goal</span>
+                            <h4 style="color: white !important; margin: 0.25rem 0 0 0;">{goal_text}</h4>
+                        </div>
+                        <div>
+                            <span style="opacity: 0.7; font-size: 0.85rem;">🏃 Activity</span>
+                            <h4 style="color: white !important; margin: 0.25rem 0 0 0;">{activity_text}</h4>
+                        </div>
+                        <div>
+                            <span style="opacity: 0.7; font-size: 0.85rem;">⚡ BMR</span>
+                            <h4 style="color: white !important; margin: 0.25rem 0 0 0;">{targets['bmr']:.0f} kcal</h4>
+                        </div>
+                        <div>
+                            <span style="opacity: 0.7; font-size: 0.85rem;">📈 TDEE</span>
+                            <h4 style="color: white !important; margin: 0.25rem 0 0 0;">{targets['tdee']:.0f} kcal</h4>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+                
+                # Calculation explanation
+                with st.expander("🧮 How we calculated your targets"):
+                    st.markdown(f"""
+                    **Step 1: BMR (Basal Metabolic Rate)**
+                    - Your body burns **{targets['bmr']:.0f} kcal/day** at complete rest
+                    - Calculated using the Mifflin-St Jeor equation
+                    
+                    **Step 2: TDEE (Total Daily Energy Expenditure)**  
+                    - BMR × Activity Multiplier = **{targets['tdee']:.0f} kcal/day**
+                    - This is your maintenance calories
+                    
+                    **Step 3: Goal Adjustment**
+                    """)
+                    
+                    if targets['goal'] == "lose_fat":
+                        st.info("🔥 **Fat Loss**: -500 kcal deficit for healthy weight loss (~0.5kg/week)")
+                    elif targets['goal'] == "gain_muscle":
+                        st.info("💪 **Muscle Gain**: +300 kcal surplus for lean muscle building")
+                    else:
+                        st.info("⚖️ **Maintenance**: No calorie adjustment")
+                    
+                    st.markdown("---")
+                    
+                    # Macro math verification
+                    protein_cals = targets['protein_g'] * 4
+                    carb_cals = targets['carb_g'] * 4
                     fat_cals = targets['fat_g'] * 9
-                    st.metric("Fat", f"{targets['fat_g']}g", f"{fat_cals} kcal")
-                
-                st.info(
-                    f"**Goal:** {targets['goal'].replace('_', ' ').title()} | "
-                    f"**Activity:** {targets['activity_level'].replace('_', ' ').title()}"
-                )
-                
-                st.markdown("---")
-                st.markdown("**How we calculated this:**")
-                st.markdown(
-                    f"1. **BMR (Basal Metabolic Rate):** {targets['bmr']:.0f} kcal/day "
-                    f"(calories your body needs at rest)"
-                )
-                st.markdown(
-                    f"2. **TDEE (Total Daily Energy Expenditure):** {targets['tdee']:.0f} kcal/day "
-                    f"(BMR × activity multiplier)"
-                )
-                
-                if targets['goal'] == "lose_fat":
-                    adjustment = "−500 kcal deficit for healthy fat loss (~0.5kg/week)"
-                elif targets['goal'] == "gain_muscle":
-                    adjustment = "+300 kcal surplus for lean muscle gain"
-                else:
-                    adjustment = "No adjustment (maintenance)"
-                
-                st.markdown(f"3. **Goal Adjustment:** {adjustment}")
-                
-                # Show macro math
-                protein_cals = targets['protein_g'] * 4
-                carb_cals = targets['carb_g'] * 4
-                fat_cals = targets['fat_g'] * 9
-                total_from_macros = protein_cals + carb_cals + fat_cals
-                
-                st.markdown("---")
-                st.markdown("**Macro Math Verification:**")
-                st.markdown(
-                    f"- Protein: {targets['protein_g']}g × 4 cal/g = **{protein_cals} kcal**\n"
-                    f"- Carbs: {targets['carb_g']}g × 4 cal/g = **{carb_cals} kcal**\n"
-                    f"- Fat: {targets['fat_g']}g × 9 cal/g = **{fat_cals} kcal**\n"
-                    f"- **Total: {total_from_macros} kcal** (Target: {targets['target_calories']} kcal)"
-                )
-                
-                accuracy = (total_from_macros / targets['target_calories']) * 100
-                if abs(accuracy - 100) <= 2:
-                    st.success(f"✅ Macros are accurate ({accuracy:.1f}% of target)")
-                else:
-                    st.info(f"ℹ️ Macros total to {accuracy:.1f}% of target (small rounding difference)")
+                    total_from_macros = protein_cals + carb_cals + fat_cals
+                    
+                    st.markdown(f"""
+                    **Macro Breakdown:**
+                    | Macro | Grams | Calories |
+                    |-------|-------|----------|
+                    | Protein | {targets['protein_g']}g | {protein_cals} kcal |
+                    | Carbs | {targets['carb_g']}g | {carb_cals} kcal |
+                    | Fat | {targets['fat_g']}g | {fat_cals} kcal |
+                    | **Total** | | **{total_from_macros} kcal** |
+                    """)
+                    
+                    accuracy = (total_from_macros / targets['target_calories']) * 100
+                    if abs(accuracy - 100) <= 2:
+                        st.success(f"✅ Macros are thermodynamically accurate ({accuracy:.1f}% of target)")
         
-        # Show plan
-        st.subheader("Your Weekly Meal Plan")
+        # Show the meal plan
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, #2D6A4F 0%, #40916C 100%); padding: 1.5rem; border-radius: 16px; color: white; margin: 1.5rem 0;">
+            <h2 style="color: white !important; margin: 0;">🍽️ Your Weekly Meal Plan</h2>
+        </div>
+        """, unsafe_allow_html=True)
+        
         plan_table(st.session_state["weekly_plan"])
         
-        # Actions
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Action buttons
         col1, col2 = st.columns(2)
         
         with col1:
@@ -273,39 +374,64 @@ def main() -> None:
                 from tools.grocery_list import build_list_from_plan
                 groceries = build_list_from_plan(st.session_state["weekly_plan"])
                 st.session_state["groceries"] = groceries
-                st.success("Grocery list ready! Check the Grocery List page.")
+                st.success("✅ Grocery list ready! Check the Grocery List page.")
         
         with col2:
             if "plan_summary" in st.session_state:
                 summary = st.session_state["plan_summary"]
                 st.download_button(
-                    "📄 Download Plan",
+                    "📄 Download Plan as Text",
                     data=summary,
                     file_name="meal_plan.txt",
                     mime="text/plain",
                     use_container_width=True
                 )
+    
     else:
-        st.info(
-            "👆 Fill in your profile in the sidebar and click "
-            "'Calculate & Generate Plan' to get started!"
-        )
+        # Empty state
+        st.markdown("<br>", unsafe_allow_html=True)
         
-        st.markdown("### Why Personalized Planning?")
-        st.markdown(
-            """
-            Our AI agent calculates your exact calorie needs using:
-            
-            1. **BMR (Basal Metabolic Rate)**: How many calories your body burns at rest
-            2. **TDEE (Total Daily Energy Expenditure)**: BMR adjusted for your activity level
-            3. **Goal Adjustment**: 
-               - Fat loss: 500 calorie deficit
-               - Muscle gain: 300 calorie surplus
-               - Maintenance: No adjustment
-            
-            Then it creates a balanced meal plan that hits your targets perfectly!
-            """
-        )
+        st.markdown("""
+        <div style="background: white; padding: 3rem; border-radius: 20px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">🎯</div>
+            <h3 style="color: #2D6A4F; margin-bottom: 1rem;">Ready to Get Your Personalized Plan?</h3>
+            <p style="color: #52796F; max-width: 500px; margin: 0 auto 1.5rem auto;">
+                Fill in your profile details in the sidebar and click "Calculate & Generate My Plan" to receive an AI-powered meal plan tailored to your goals!
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # How it works cards
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.markdown("""
+            <div style="background: #FEF3C7; padding: 1.5rem; border-radius: 16px; height: 180px;">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">1️⃣</div>
+                <h4 style="color: #92400E; margin-bottom: 0.5rem;">Enter Your Info</h4>
+                <p style="color: #A16207; font-size: 0.9rem; margin: 0;">Fill in weight, height, age, and activity level in the sidebar.</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown("""
+            <div style="background: #DBEAFE; padding: 1.5rem; border-radius: 16px; height: 180px;">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">2️⃣</div>
+                <h4 style="color: #1E40AF; margin-bottom: 0.5rem;">Set Your Goal</h4>
+                <p style="color: #3B82F6; font-size: 0.9rem; margin: 0;">Choose fat loss, maintenance, or muscle gain for calorie adjustment.</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col3:
+            st.markdown("""
+            <div style="background: #D1FAE5; padding: 1.5rem; border-radius: 16px; height: 180px;">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">3️⃣</div>
+                <h4 style="color: #065F46; margin-bottom: 0.5rem;">Get Your Plan</h4>
+                <p style="color: #10B981; font-size: 0.9rem; margin: 0;">Receive a personalized meal plan with exact macro targets!</p>
+            </div>
+            """, unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
