@@ -5,7 +5,7 @@ import json
 from typing import Any, List
 
 try:  # pragma: no cover
-    from langchain.tools import Tool
+    from langchain_core.tools import Tool
 except Exception:  # pragma: no cover
     Tool = None  # type: ignore
 

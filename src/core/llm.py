@@ -7,9 +7,13 @@ from typing import Any, Dict, Optional
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 try:  # pragma: no cover - optional import
-    import google.generativeai as genai 
+    import google.genai as genai
+    from google.genai import types as genai_types
+    _GENAI_AVAILABLE = True
 except Exception:  # pragma: no cover
     genai = None  # type: ignore
+    genai_types = None  # type: ignore
+    _GENAI_AVAILABLE = False
 
 from config import CHAT_MODEL, get_google_api_key
 
@@ -19,43 +23,49 @@ class GeminiClient:
 
     def __init__(self, api_key: Optional[str] = None) -> None:
         self.api_key = api_key or get_google_api_key()
-        if self.api_key and genai:
-            genai.configure(api_key=self.api_key)
+        if self.api_key and _GENAI_AVAILABLE:
+            self._client = genai.Client(api_key=self.api_key)
             self._offline = False
         else:
+            self._client = None
             self._offline = True
-        
+
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=1, max=4))
     def generate_text(self, prompt: str, **kwargs: Any) -> str:
         """Generate text using Gemini or an offline fallback."""
         if self._offline:
             return self._offline_response(prompt)
 
-        assert genai is not None
-
         try:
-            # Configure generation parameters to reduce hallucination
-            generation_config = {
-                "temperature": kwargs.get("temperature", 0.3),  # Lower temperature = more factual
-                "top_p": kwargs.get("top_p", 0.8),  # Reduce sampling diversity
-                "top_k": kwargs.get("top_k", 40),  # Limit token selection
-                "max_output_tokens": kwargs.get("max_output_tokens", 2048),
-            }
-
-            # Add safety settings to prevent harmful content
-            safety_settings = [
-                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-            ]
-
-            model = genai.GenerativeModel(
-                model_name=CHAT_MODEL,
-                generation_config=generation_config,
-                safety_settings=safety_settings,
+            config = genai_types.GenerateContentConfig(
+                temperature=kwargs.get("temperature", 0.3),
+                top_p=kwargs.get("top_p", 0.8),
+                top_k=kwargs.get("top_k", 40),
+                max_output_tokens=kwargs.get("max_output_tokens", 2048),
+                safety_settings=[
+                    genai_types.SafetySetting(
+                        category="HARM_CATEGORY_HARASSMENT",
+                        threshold="BLOCK_MEDIUM_AND_ABOVE",
+                    ),
+                    genai_types.SafetySetting(
+                        category="HARM_CATEGORY_HATE_SPEECH",
+                        threshold="BLOCK_MEDIUM_AND_ABOVE",
+                    ),
+                    genai_types.SafetySetting(
+                        category="HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                        threshold="BLOCK_MEDIUM_AND_ABOVE",
+                    ),
+                    genai_types.SafetySetting(
+                        category="HARM_CATEGORY_DANGEROUS_CONTENT",
+                        threshold="BLOCK_MEDIUM_AND_ABOVE",
+                    ),
+                ],
             )
-            response = model.generate_content(prompt)
+            response = self._client.models.generate_content(
+                model=CHAT_MODEL,
+                contents=prompt,
+                config=config,
+            )
             return response.text or ""
         except Exception as e:
             # Fallback to offline if API fails
