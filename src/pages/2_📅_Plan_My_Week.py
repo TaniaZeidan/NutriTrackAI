@@ -9,10 +9,15 @@ from agent.planning_agent import MealPlanningAgent
 from ui.components import plan_table
 
 
+@st.cache_resource
+def _create_planning_agent():
+    """Create a fresh MealPlanningAgent (cached until Streamlit restarts)."""
+    return MealPlanningAgent()
+
+
 def _ensure_session() -> None:
     """Initialize session state."""
-    if "planning_agent" not in st.session_state:
-        st.session_state["planning_agent"] = MealPlanningAgent()
+    st.session_state["planning_agent"] = _create_planning_agent()
     if "user_profile" not in st.session_state:
         st.session_state["user_profile"] = {
             "weight_kg": 70.0,

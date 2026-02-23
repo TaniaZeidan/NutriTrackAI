@@ -11,8 +11,11 @@ Three agent roles:
 """
 from __future__ import annotations
 
+import logging
 import uuid
 from typing import Any, List, Optional
+
+logger = logging.getLogger(__name__)
 
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode, tools_condition
@@ -57,6 +60,7 @@ def router_node(state: NutriTrackState) -> dict:
         "query_type": decision.query_type,
         "confidence": decision.confidence,
         "current_agent": decision.query_type,
+        "needs_review": decision.confidence < CONFIDENCE_THRESHOLD,
     }
 
 
@@ -168,7 +172,13 @@ class NutriTrackAgent:
 
     def run(self, prompt: str) -> str:
         """Send a user message through the multi-agent graph."""
+        result = self.run_with_state(prompt)
+        return result["response"]
+
+    def run_with_state(self, prompt: str) -> dict:
+        """Send a user message and return both the response and state metadata."""
         self.conversation.add_turn(prompt, "")
+        state_meta: dict = {}
 
         try:
             config = {"configurable": {"thread_id": self._thread_id}}
@@ -178,9 +188,17 @@ class NutriTrackAgent:
             )
             ai_msg = result["messages"][-1]
             response = ai_msg.content if hasattr(ai_msg, "content") else str(ai_msg)
+            state_meta = {
+                "current_agent": result.get("current_agent"),
+                "query_type": result.get("query_type"),
+                "confidence": result.get("confidence"),
+                "tool_calls_count": result.get("tool_calls_count", 0),
+                "needs_review": result.get("needs_review", False),
+                "message_count": len(result.get("messages", [])),
+            }
         except Exception as exc:
             exc_str = str(exc).lower()
-            print(f"LangGraph invocation failed: {exc}")
+            logger.warning("LangGraph invocation failed: %s", exc)
             if "429" in str(exc) or "resourceexhausted" in exc_str or "quota" in exc_str:
                 response = (
                     "The Gemini API rate limit has been reached. The free tier allows "
@@ -194,7 +212,7 @@ class NutriTrackAgent:
                 response = self.gemini.generate_text(prompt)
 
         self.conversation.buffer[-1] = (prompt, response)
-        return response
+        return {"response": response, "state": state_meta}
 
 
 __all__ = ["NutriTrackAgent", "build_graph"]

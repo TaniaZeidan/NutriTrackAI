@@ -18,12 +18,17 @@ class CookingAgent:
         self.agent = NutriTrackAgent()
 
     def chat(self, user_input: str, servings: int = 2) -> str:
+        result = self.chat_with_state(user_input, servings)
+        return result["response"]
+
+    def chat_with_state(self, user_input: str, servings: int = 2) -> dict:
+        """Return both the response text and the graph state metadata."""
         servings_int = max(1, int(servings) if isinstance(servings, (int, float)) else 2)
         prompt = (
             f"(The user wants help for {servings_int} serving(s).)\n\n"
             f"{user_input}"
         )
-        return self.agent.run(prompt)
+        return self.agent.run_with_state(prompt)
 
 
 __all__ = ["CookingAgent"]
