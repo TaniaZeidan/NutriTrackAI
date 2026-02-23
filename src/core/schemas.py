@@ -2,25 +2,15 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from typing import List, Literal, Optional
+from typing import Annotated, List, Literal, Optional
 
-try:  # pragma: no cover
-    from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict
+
+try:
+    from langgraph.graph.message import add_messages
 except Exception:  # pragma: no cover
-    class BaseModel:  # type: ignore
-        def __init__(self, **data):
-            for key, value in data.items():
-                setattr(self, key, value)
-
-        def model_dump(self) -> dict:
-            return self.__dict__
-
-    def Field(*args, **kwargs):  # type: ignore
-        return kwargs.get("default", kwargs.get("default_factory", None))
-
-    class ConfigDict(dict):  # type: ignore
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
+    def add_messages(left, right):  # type: ignore
+        return (left or []) + right
 
 
 class MealItem(BaseModel):
@@ -167,6 +157,32 @@ class UserProfile(BaseModel):
     fat_target: Optional[int] = None
 
 
+class RouterDecision(BaseModel):
+    """Structured output produced by the Router agent (SOM)."""
+
+    query_type: Literal["cooking", "nutrition", "general"] = Field(
+        description="The category that best matches the user query.",
+    )
+    confidence: float = Field(
+        ge=0.0, le=1.0,
+        description="How confident the router is in its classification (0-1).",
+    )
+    reasoning: str = Field(
+        description="One-sentence explanation for the routing decision.",
+    )
+
+
+class NutriTrackState(BaseModel):
+    """Pydantic state model for the multi-agent LangGraph."""
+
+    messages: Annotated[list, add_messages] = Field(default_factory=list)
+    current_agent: Optional[str] = None
+    query_type: Optional[str] = None
+    confidence: float = 0.0
+    tool_calls_count: int = 0
+    needs_review: bool = False
+
+
 __all__ = [
     "MealItem",
     "Meal",
@@ -177,4 +193,6 @@ __all__ = [
     "Step",
     "RecipeDocument",
     "UserProfile",
+    "RouterDecision",
+    "NutriTrackState",
 ]

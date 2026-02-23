@@ -1,13 +1,49 @@
 # NutriTrackAI
 
-NutriTrackAI is a multi-page Streamlit application for logging meals, planning weekly menus, and getting grounded cooking help. The app pairs local datasets (SQLite, FAISS, nutrition reference JSON/CSVs) with a LangChain agent that wraps Gemini Pro so you can run offline by default and switch to live LLM responses when a Google API key is available.
+NutriTrackAI is a multi-page Streamlit application for logging meals, planning weekly menus, and getting grounded cooking help. The app pairs local datasets (SQLite, FAISS, nutrition reference JSON/CSVs) with a **multi-agent LangGraph system** powered by Google Gemini so you can run offline by default and switch to live LLM responses when an API key is available.
+
+## Multi-Agent LangGraph Architecture
+
+The core of the application is a **3-agent LangGraph StateGraph** that routes user queries to the right specialist:
+
+```
+START -> Router -> [route_by_type] -> CookingAgent  <-> CookingTools  -> END
+                                   -> NutritionAgent <-> NutritionTools -> END
+```
+
+### Agent Roles
+
+| Agent | Responsibility | Tools |
+|-------|---------------|-------|
+| **Router** | Classifies queries using Structured Output Mode (Pydantic `RouterDecision`) | None (SOM only) |
+| **Cooking Agent** | Recipes, cooking instructions, ingredient scaling | `cooking_rag`, `ingredient_weights` |
+| **Nutrition Agent** | Calorie targets, BMR/TDEE, meal planning | `macro_targets`, `meal_planner` |
+
+### State Schema (Pydantic)
+
+```python
+class NutriTrackState(BaseModel):
+    messages: Annotated[list, add_messages]   # conversation history
+    current_agent: Optional[str] = None       # which agent is handling the query
+    query_type: Optional[str] = None          # cooking / nutrition / general
+    confidence: float = 0.0                   # router classification confidence
+    tool_calls_count: int = 0                 # number of tool invocations
+    needs_review: bool = False                # flagged when confidence is low
+```
+
+### Key Design Decisions
+
+- **Structured Output Mode**: The Router agent uses `.with_structured_output(RouterDecision)` to produce a validated Pydantic classification, ensuring type-safe routing.
+- **Conditional Edges**: `route_by_type()` reads `query_type` and `confidence` from state. Low-confidence queries fall back to the Cooking Agent. Each specialist agent also has a `tools_condition` edge for tool call loops.
+- **MemorySaver Checkpointer**: Thread-based conversation memory so multi-turn interactions accumulate context.
+- **Different Toolsets**: Each specialist agent has its own distinct toolset, not shared.
 
 ## Feature Highlights
-- **Daily Log (deterministic)** – Gram-based logging backed by SQLite (`data/processed/nutritrackai.db`) and a nutrition reference JSON. No LLM involvement.
-- **Plan My Week (deterministic + narrated)** – Calculates BMR/TDEE/macros with pure Python, builds a weekly plan, then optionally asks the NutriTrack agent to rewrite the summary in natural language.
-- **Cooking Assistant (LLM agent)** – Conversational assistant backed by the NutriTrackAgent (LangChain + Gemini Pro) that can call tools for recipe RAG, macro targets, and ingredient weights.
-- **RAG pipeline** – FAISS index over `data/raw/recipes_sample.csv` and `data/raw/healthy_meal_plans.csv`. Uses Gemini `text-embedding-004` when an API key is present, with a deterministic hash embedding fallback when offline.
-- **Tooling surface** – The agent exposes at least three tools: `cooking_rag` (recipe search + macros), `macro_targets` (BMR/TDEE/macro calculator), and `ingredient_weights` (gram estimates from the nutrition reference).
+
+- **Daily Log (deterministic)** -- Gram-based logging backed by SQLite and a nutrition reference JSON. No LLM involvement.
+- **Plan My Week (deterministic + narrated)** -- Calculates BMR/TDEE/macros with pure Python, builds a weekly plan, then optionally asks the NutriTrack agent to rewrite the summary.
+- **Cooking Assistant (multi-agent LLM)** -- Conversational assistant backed by the LangGraph multi-agent system. Includes an "Agent State" panel that shows routing decisions, confidence scores, and tool usage.
+- **RAG pipeline** -- FAISS index over recipe datasets. Uses Gemini embeddings when an API key is present, with a deterministic hash embedding fallback when offline.
 
 ## Repository Layout
 
@@ -18,11 +54,13 @@ NutriTrackAI/
 |   `-- processed/         # nutritrackai.db, faiss_index/*
 |-- src/
 |   |-- app.py             # Streamlit entrypoint + page routing
+|   |-- config.py          # Environment and model configuration
 |   |-- pages/             # Daily Log, Plan My Week, Cooking Assistant
-|   |-- core/              # config, schemas, db, utils, prompts, embeddings, llm, rag
-|   |-- tools/             # calorie tracker, planner, cooking helpers, LangChain tool registry
-|   |-- agent/             # NutriTrackAgent orchestration and helpers
+|   |-- core/              # schemas, prompts, db, embeddings, llm, rag, memory
+|   |-- tools/             # calorie calculator, meal planner, cooking helpers, tool registry
+|   |-- agent/             # orchestrator (LangGraph), cooking_agent, planning_agent
 |   `-- ui/                # shared Streamlit components
+|-- demo.py                # CLI demo exercising all 3 agent roles
 |-- requirements.txt
 `-- README.md
 ```
@@ -31,7 +69,7 @@ NutriTrackAI/
 
 - Python 3.11+
 - pip
-- (Optional) Google Generative AI API access for live Gemini responses
+- (Optional) Google Generative AI API key for live Gemini responses
 
 ## Setup
 
@@ -43,7 +81,7 @@ pip install -r requirements.txt
 echo GOOGLE_API_KEY=your_key_here > .env  # optional; enables live Gemini + embeddings
 ```
 
-`src/config.py` loads `.env`. If `GOOGLE_API_KEY` is absent, Gemini calls fall back to deterministic offline responses and hash-based embeddings so you can still exercise the UI and tools.
+`src/config.py` loads `.env`. If `GOOGLE_API_KEY` is absent, Gemini calls fall back to deterministic offline responses and hash-based embeddings.
 
 ## Running the App
 
@@ -51,41 +89,40 @@ echo GOOGLE_API_KEY=your_key_here > .env  # optional; enables live Gemini + embe
 streamlit run src/app.py
 ```
 
-On first launch a FAISS index is created from the files in `data/raw/`. You can rebuild later from the sidebar button or via:
+On first launch a FAISS index is created from the files in `data/raw/`.
+
+### CLI Demo
+
+To exercise all three agent roles from the command line:
 
 ```bash
-python - <<'PY'
-import sys
-sys.path.append("src")
-from core.embeddings import build_index
-build_index(force=True)
-PY
+python demo.py
 ```
 
-### Pages and Agent Mapping
-- **📋 Daily Log** – Purely local logging; SQLite-backed; unchanged by the agent.
-- **📅 Plan My Week** – Deterministic macro math + plan generator; summary text may be rewritten by the NutriTrack agent (LangChain + Gemini Pro) while tables and totals remain deterministic.
-- **👩‍🍳 Cooking Assistant** – Fully LLM-powered chat. The agent uses ConversationBufferMemory, Gemini Pro chat, and tools (`cooking_rag`, `macro_targets`, `ingredient_weights`) to fetch recipes, scale ingredients, and present macros in natural language.
+This sends a cooking query, a nutrition query, and a general query through the graph and prints the state evolution after each.
+
+## Course Requirement Mapping
+
+| Requirement | Implementation |
+|-------------|---------------|
+| A) 3+ Agent Roles | Router, Cooking Agent, Nutrition Agent |
+| B) Different Toolsets | Cooking = {cooking_rag, ingredient_weights}, Nutrition = {macro_targets, meal_planner} |
+| C) Pydantic State + MemorySaver | `NutriTrackState(BaseModel)` with `MemorySaver()` checkpointer |
+| D) Structured Output Mode | Router uses `.with_structured_output(RouterDecision)` |
+| E) Non-String + Optional Fields | `float`, `int`, `bool`, `Optional[str]` fields that evolve during execution |
+| F) Conditional Edge | `route_by_type()` checks query_type and confidence; `tools_condition` for tool loops |
+| G) Demo | Streamlit UI + CLI demo script |
 
 ## Data, Storage & Privacy
 
-- **Nutrition reference** (`data/raw/nutrition_reference.json`) powers gram-based logging; you can append via the UI or edit JSON directly.
-- **Recipe datasets** (`data/raw/recipes_sample.csv` and `data/raw/healthy_meal_plans.csv`) feed both planning and the FAISS retrieval pipeline. Replace or extend them with your own CSV files to customize suggestions.
-- **Local persistence** – Logged meals live in `data/processed/nutritrackai.db` and never leave your machine. FAISS metadata/vectors are stored under `data/processed/faiss_index`.
-- Keep `.env` and any exported data files (e.g., plan summaries) out of version control to avoid leaking personal information or API keys.
-
-## Testing
-
-```bash
-pytest -q
-```
-
-The tests cover macro utilities, retrieval helpers, and tool behavior so regressions are caught early.
+- **Nutrition reference** (`data/raw/nutrition_reference.json`) powers gram-based logging.
+- **Recipe datasets** (`data/raw/recipes_sample.csv` and `data/raw/healthy_meal_plans.csv`) feed planning and FAISS retrieval.
+- **Local persistence** -- Logged meals live in `data/processed/nutritrackai.db` and never leave your machine.
+- Keep `.env` and any exported data files out of version control to avoid leaking API keys.
 
 ## Troubleshooting
 
-- **Missing nutrition reference** – Ensure `data/raw/nutrition_reference.json` exists; the Daily Log page relies on it.
-- **FAISS complaints** – `faiss-cpu` and `numpy` are optional; the app falls back to pure-Python similarity scoring but you may reinstall FAISS if you need the native index.
-- **Gemini errors** – Verify `GOOGLE_API_KEY` is set and that the Generative AI API is enabled for your project. Without a key, the app automatically switches to offline fallbacks (hash embeddings + deterministic text).
-
-With this setup, you can confidently develop new Streamlit pages, extend LangChain tooling, or swap in production-ready datasets without guessing how the system hangs together.
+- **Rate limits** -- The free tier for `gemini-2.5-flash` allows ~20 requests/day. Each query uses 2-3 API calls through the multi-agent graph. The app shows a clear message when limits are hit.
+- **Missing nutrition reference** -- Ensure `data/raw/nutrition_reference.json` exists.
+- **FAISS complaints** -- `faiss-cpu` and `numpy` are optional; the app falls back to pure-Python similarity scoring.
+- **Gemini errors** -- Verify `GOOGLE_API_KEY` is set in `.env`. Without a key, the app switches to offline fallbacks.

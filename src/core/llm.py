@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 import json
+import logging
 from typing import Any, Dict, Optional
+
+logger = logging.getLogger(__name__)
 
 from tenacity import retry, stop_after_attempt, wait_exponential
 
@@ -69,7 +72,7 @@ class GeminiClient:
             return response.text or ""
         except Exception as e:
             # Fallback to offline if API fails
-            print(f"Gemini API error: {e}, falling back to offline mode")
+            logger.warning("Gemini API error: %s, falling back to offline mode", e)
             return self._offline_response(prompt)
 
     def structured_json(self, prompt: str) -> Dict[str, Any]:
