@@ -95,52 +95,128 @@ def _parse_json_field(value: str | None, default):
         return default
 
 
+def _parse_retry_delay(exc: Exception) -> float:
+    """Extract the suggested retry delay from a Google API error, if present."""
+    import re
+    m = re.search(r"retry in ([\d.]+)s", str(exc))
+    return float(m.group(1)) if m else 0.0
+
+
+def _embed_batch(batch: List[str], max_retries: int = 8) -> List[List[float]]:
+    """Embed a batch of texts in a single API call with retry."""
+    import time
+
+    assert genai is not None
+    for attempt in range(max_retries):
+        try:
+            resp = genai.embed_content(model=EMBEDDING_MODEL, content=batch)
+            if isinstance(resp, dict) and "embedding" in resp:
+                embs = resp["embedding"]
+                if isinstance(embs[0], float):
+                    return [embs]
+                return embs
+            raise ValueError(f"Unexpected response format: {type(resp)}")
+        except Exception as exc:
+            if attempt >= max_retries - 1:
+                raise
+            suggested = _parse_retry_delay(exc)
+            is_rate_limit = "429" in str(exc) or "quota" in str(exc).lower()
+            backoff = min(2 ** attempt, 32)
+            wait = max(suggested + 5, backoff) if is_rate_limit else backoff
+            print(f"    Retry {attempt + 1}/{max_retries} after {wait:.0f}s: {str(exc)[:80]}")
+            time.sleep(wait)
+
+
+PROGRESS_FILE = FAISS_INDEX_DIR / "_embed_progress.json"
+
+
+def _save_progress(vectors: List[List[float]], done_count: int) -> None:
+    """Persist partially-completed embedding vectors so we can resume."""
+    FAISS_INDEX_DIR.mkdir(parents=True, exist_ok=True)
+    with open(PROGRESS_FILE, "w", encoding="utf-8") as f:
+        json.dump({"done": done_count, "vectors": vectors}, f)
+
+
+def _load_progress() -> tuple[List[List[float]], int]:
+    """Load previously saved embedding progress, if any."""
+    if PROGRESS_FILE.exists():
+        try:
+            with open(PROGRESS_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            return data["vectors"], data["done"]
+        except Exception:
+            pass
+    return [], 0
+
+
 def _get_embeddings(texts: List[str]) -> tuple[List[List[float]], str]:
     """Return embeddings for a list of texts.
 
-    If GOOGLE_API_KEY is configured and the Google Generative AI client is
-    available, this uses the Gemini text-embedding-004 model. Otherwise it
-    falls back to a deterministic hash-based embedding so the app can still
-    run fully offline.
+    Uses the Gemini embedding model with batched requests and rate limiting
+    to stay within free-tier quotas (100 req/min, 1000 req/day). Progress
+    is saved after each batch so the process can resume across rate-limit
+    resets. Falls back to deterministic hash embeddings for offline usage.
     """
-    # Try real Gemini embeddings first
+    import time
+
+    BATCH_SIZE = 20  # kept small so each request uses fewer daily quota units
+
     if genai is not None:
-        try:
-            api_key = _safe_api_key()
-            if api_key:
-                genai.configure(api_key=api_key)
-            else:
-                raise RuntimeError("GOOGLE_API_KEY not configured")
+        api_key = _safe_api_key()
+        if not api_key:
+            print("GOOGLE_API_KEY not configured, using hash embeddings.")
+            return [_normalize(_hash_embed(t)) for t in texts], BACKEND_HASH
 
-            # Process texts one by one with progress indicator
-            # Note: Gemini batch API has inconsistent response formats, so we process individually
-            vectors: List[List[float]] = []
-            total = len(texts)
+        genai.configure(api_key=api_key)
 
-            print(f"Processing {total} texts with Gemini embeddings...")
-            for idx, text in enumerate(texts, 1):
-                if idx % 100 == 0 or idx == 1:
-                    print(f"  Progress: {idx}/{total} ({100*idx//total}%)...")
+        vectors, done = _load_progress()
+        total = len(texts)
 
-                resp = genai.embed_content(
-                    model=EMBEDDING_MODEL,
-                    content=text,
-                )
-
-                # Extract embedding from response
-                if isinstance(resp, dict) and "embedding" in resp:
-                    vec = resp["embedding"]
-                else:
-                    # Try alternative response format
-                    vec = resp.get("embedding") if hasattr(resp, 'get') else resp.embedding
-
-                vectors.append(_normalize(vec))
-
-            print(f"Completed {len(vectors)} embeddings")
+        if done >= total and len(vectors) == total:
+            print(f"Resuming: all {total} embeddings already completed.")
+            if PROGRESS_FILE.exists():
+                PROGRESS_FILE.unlink()
             return vectors, BACKEND_GEMINI
 
-        except Exception as exc:  # pragma: no cover - network / quota issues
-            print(f"Embedding API error, falling back to hash embeddings: {exc}")
+        if done > 0 and done <= total and len(vectors) == done:
+            print(f"Resuming from text {done + 1}/{total} ({done} already embedded)...")
+        else:
+            vectors, done = [], 0
+
+        remaining_texts = texts[done:]
+        num_batches = (len(remaining_texts) + BATCH_SIZE - 1) // BATCH_SIZE
+
+        print(f"Processing {len(remaining_texts)} texts in {num_batches} batches...")
+        for batch_idx in range(num_batches):
+            start = batch_idx * BATCH_SIZE
+            end = min(start + BATCH_SIZE, len(remaining_texts))
+            batch = remaining_texts[start:end]
+            abs_start = done + start + 1
+            abs_end = done + end
+
+            if batch_idx % 10 == 0 or batch_idx == num_batches - 1:
+                print(f"  Batch {batch_idx + 1}/{num_batches} "
+                      f"(texts {abs_start}-{abs_end}/{total})...")
+
+            try:
+                batch_vecs = _embed_batch(batch)
+                vectors.extend(_normalize(v) for v in batch_vecs)
+                _save_progress(vectors, len(vectors))
+            except Exception as exc:
+                _save_progress(vectors, len(vectors))
+                embedded = len(vectors)
+                print(f"\nRate-limited after {embedded}/{total} embeddings.")
+                print(f"Progress saved. Run rebuild_index.py again later to continue.")
+                print(f"Error: {str(exc)[:120]}")
+                return [_normalize(_hash_embed(t)) for t in texts], BACKEND_HASH
+
+            if batch_idx < num_batches - 1:
+                time.sleep(1.5)
+
+        print(f"Completed all {len(vectors)} embeddings!")
+        if PROGRESS_FILE.exists():
+            PROGRESS_FILE.unlink()
+        return vectors, BACKEND_GEMINI
 
     # Offline / fallback path
     return [_normalize(_hash_embed(text)) for text in texts], BACKEND_HASH

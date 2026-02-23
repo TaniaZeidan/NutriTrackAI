@@ -383,6 +383,12 @@
     "carb_g": 1.3,
     "fat_g": 33.1
   },
+  "Cheese balls": {
+    "calories": 300.0,
+    "protein_g": 20.0,
+    "carb_g": 50.0,
+    "fat_g": 10.0
+  },
   "cheese crackers": {
     "calories": 200.0,
     "protein_g": 12.0,
@@ -982,6 +988,12 @@
     "protein_g": 30,
     "carb_g": 38,
     "fat_g": 5
+  },
+  "meat balls": {
+    "calories": 400.0,
+    "protein_g": 31.0,
+    "carb_g": 50.0,
+    "fat_g": 18.0
   },
   "milk chocolate": {
     "calories": 535,
