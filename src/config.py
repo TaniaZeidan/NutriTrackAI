@@ -18,7 +18,7 @@ FAISS_INDEX_DIR = PROCESSED_DATA_DIR / "faiss_index"
 DEFAULT_DB_PATH = PROCESSED_DATA_DIR / "nutritrackai.db"
 ENV_FILE = ROOT_DIR / ".env"
 
-EMBEDDING_MODEL = "models/text-embedding-004"
+EMBEDDING_MODEL = "models/gemini-embedding-001"
 CHAT_MODEL = "models/gemini-2.5-flash"  # Using available model
 
 
