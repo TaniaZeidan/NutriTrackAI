@@ -6,19 +6,24 @@ import streamlit as st
 from agent.cooking_agent import CookingAgent
 
 
+@st.cache_resource
+def _create_agent():
+    """Create a fresh CookingAgent (cached until Streamlit restarts)."""
+    return CookingAgent()
+
+
 def _ensure_session() -> None:
     """Initialize session state variables."""
     if "cooking_chat" not in st.session_state:
         st.session_state["cooking_chat"] = []
     if "cooking_servings" not in st.session_state:
         st.session_state["cooking_servings"] = 2
-    if "cooking_agent" not in st.session_state:
-        try:
-            st.session_state["cooking_agent"] = CookingAgent()
-        except Exception as exc:
-            st.error("Failed to initialize the cooking agent. Please check your API key setup.")
-            st.session_state["cooking_agent"] = None
-            print(f"Cooking agent init error: {exc}")
+    try:
+        st.session_state["cooking_agent"] = _create_agent()
+    except Exception as exc:
+        st.error(f"Failed to initialize the cooking agent: {exc}")
+        st.session_state["cooking_agent"] = None
+        print(f"Cooking agent init error: {exc}")
 
 
 def _process_message(prompt: str) -> None:

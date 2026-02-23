@@ -110,9 +110,8 @@ class MealPlanningAgent:
         try:
             if self._narrator is None:
                 from agent.orchestrator import NutriTrackAgent
-                from tools.tool_registry import get_tools
 
-                self._narrator = NutriTrackAgent(tools=get_tools())
+                self._narrator = NutriTrackAgent()
 
             prompt = (
                 "Rewrite the meal plan summary below into a concise, motivating overview. "
