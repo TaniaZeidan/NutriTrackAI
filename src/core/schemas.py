@@ -160,7 +160,7 @@ class UserProfile(BaseModel):
 class RouterDecision(BaseModel):
     """Structured output produced by the Router agent (SOM)."""
 
-    query_type: Literal["cooking", "nutrition", "general"] = Field(
+    query_type: Literal["cooking", "nutrition", "grocery", "general"] = Field(
         description="The category that best matches the user query.",
     )
     confidence: float = Field(

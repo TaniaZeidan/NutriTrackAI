@@ -3,6 +3,7 @@
 Provides per-agent toolsets so each agent gets its own set of capabilities:
   - Cooking agent:   {cooking_rag, ingredient_weights}
   - Nutrition agent: {macro_targets, meal_planner}
+  - Grocery agent:   {shopping_list_builder, pantry_checker}
 """
 from __future__ import annotations
 
@@ -171,6 +172,156 @@ def _tool_meal_planner(payload: str) -> str:
         return f"Error generating meal plan: {exc!r}"
 
 
+# ── Grocery-agent tools ──────────────────────────────────────────────────────
+
+AISLE_MAP = {
+    "produce": [
+        "apple", "avocado", "banana", "basil", "bean sprouts", "bell pepper",
+        "berries", "blueberries", "broccoli", "cabbage", "carrot", "celery",
+        "cherry tomatoes", "chili", "cilantro", "corn", "cucumber", "eggplant",
+        "garlic", "ginger", "green beans", "green onion", "jalapeno", "kale",
+        "leek", "lemon", "lettuce", "lime", "mango", "mint", "mushroom",
+        "onion", "orange", "parsley", "peach", "pear", "peas", "pepper",
+        "pineapple", "potato", "pumpkin", "radish", "romaine", "scallion",
+        "shallot", "spinach", "squash", "strawberries", "sweet potato",
+        "thyme", "tomato", "zucchini",
+    ],
+    "meat & seafood": [
+        "bacon", "beef", "chicken", "chorizo", "cod", "crab", "duck", "fish",
+        "ground beef", "ground turkey", "ham", "lamb", "pork", "prawn",
+        "salmon", "sardine", "sausage", "shrimp", "steak", "tilapia",
+        "tuna", "turkey",
+    ],
+    "dairy & eggs": [
+        "butter", "cheddar", "cheese", "cottage cheese", "cream", "cream cheese",
+        "egg", "feta", "ghee", "gouda", "greek yogurt", "heavy cream",
+        "milk", "mozzarella", "parmesan", "ricotta", "sour cream",
+        "whipping cream", "yogurt",
+    ],
+    "grains & bakery": [
+        "bagel", "barley", "bread", "brown rice", "bulgur", "couscous",
+        "flour", "naan", "noodles", "oats", "pasta", "pita", "quinoa",
+        "rice", "rye", "sourdough", "tortilla", "wheat", "wrap",
+    ],
+    "canned & jarred": [
+        "beans", "black beans", "broth", "canned tomato", "chickpeas",
+        "coconut milk", "diced tomatoes", "kidney beans", "lentils",
+        "olives", "peanut butter", "salsa", "stock", "tomato paste",
+        "tomato sauce",
+    ],
+    "oils, spices & condiments": [
+        "balsamic vinegar", "cayenne", "chili flakes", "chili powder",
+        "cinnamon", "coconut oil", "cumin", "curry powder", "dijon mustard",
+        "honey", "hot sauce", "ketchup", "maple syrup", "mayonnaise",
+        "mustard", "nutmeg", "olive oil", "oregano", "paprika", "pepper",
+        "rosemary", "salt", "sesame oil", "soy sauce", "sriracha", "sugar",
+        "turmeric", "vanilla", "vinegar",
+    ],
+    "frozen": [
+        "frozen berries", "frozen broccoli", "frozen corn", "frozen peas",
+        "frozen spinach", "frozen vegetables", "ice cream",
+    ],
+    "snacks & other": [
+        "almonds", "cashews", "chia seeds", "chocolate", "cocoa", "coconut",
+        "dried fruit", "flax seeds", "granola", "hemp seeds", "nuts",
+        "peanuts", "pecans", "pistachios", "protein powder", "raisins",
+        "seeds", "sunflower seeds", "tofu", "walnuts",
+    ],
+}
+
+PANTRY_STAPLES = {
+    "salt", "pepper", "black pepper", "olive oil", "vegetable oil",
+    "cooking spray", "sugar", "flour", "baking powder", "baking soda",
+    "vanilla", "cinnamon", "garlic powder", "onion powder", "paprika",
+    "cumin", "oregano", "basil", "thyme", "bay leaves", "soy sauce",
+    "vinegar", "mustard", "ketchup", "hot sauce", "honey",
+    "butter", "eggs", "egg", "milk", "water",
+}
+
+
+def _classify_aisle(ingredient: str) -> str:
+    token = ingredient.lower().strip()
+    for aisle, keywords in AISLE_MAP.items():
+        for kw in keywords:
+            if kw in token or token in kw:
+                return aisle
+    return "other"
+
+
+def _tool_shopping_list_builder(payload: str) -> str:
+    """Build a grocery shopping list from recipe ingredients.
+
+    Input: JSON string {"ingredients": ["chicken breast", "rice", ...], "servings": 4}
+    Each ingredient can optionally include a quantity prefix, e.g. "200g chicken breast".
+    """
+    try:
+        data = json.loads(payload)
+        if not isinstance(data, dict):
+            raise ValueError("Payload must be a JSON object")
+
+        raw_ingredients = [str(x).strip() for x in data.get("ingredients", [])]
+        servings = int(data.get("servings", 1))
+        if not raw_ingredients:
+            return "No ingredients provided. Please provide a list of recipe ingredients."
+
+        grouped: dict[str, list[str]] = {}
+        for item in raw_ingredients:
+            aisle = _classify_aisle(item)
+            grouped.setdefault(aisle, []).append(item)
+
+        lines = [f"Shopping list ({len(raw_ingredients)} items for {servings} servings):\n"]
+        for aisle in sorted(grouped):
+            lines.append(f"**{aisle.title()}**")
+            for ingredient in sorted(grouped[aisle]):
+                lines.append(f"  - {ingredient}")
+            lines.append("")
+
+        return "\n".join(lines)
+
+    except Exception as exc:
+        return f"Error building shopping list: {exc!r}"
+
+
+def _tool_pantry_checker(payload: str) -> str:
+    """Check which ingredients are common pantry staples the user likely already has.
+
+    Input: JSON string {"ingredients": ["chicken breast", "salt", "olive oil", ...]}
+    Returns two lists: items to buy and items likely already in the pantry.
+    """
+    try:
+        data = json.loads(payload)
+        if not isinstance(data, dict):
+            raise ValueError("Payload must be a JSON object")
+
+        raw_ingredients = [str(x).strip() for x in data.get("ingredients", [])]
+        if not raw_ingredients:
+            return "No ingredients provided."
+
+        to_buy = []
+        in_pantry = []
+        for item in raw_ingredients:
+            token = item.lower().strip()
+            if any(staple in token or token in staple for staple in PANTRY_STAPLES):
+                in_pantry.append(item)
+            else:
+                to_buy.append(item)
+
+        lines = []
+        if to_buy:
+            lines.append(f"**Need to buy ({len(to_buy)} items):**")
+            for item in sorted(to_buy):
+                lines.append(f"  - {item}")
+        if in_pantry:
+            lines.append(f"\n**Likely already in your pantry ({len(in_pantry)} items):**")
+            for item in sorted(in_pantry):
+                lines.append(f"  - {item}")
+
+        return "\n".join(lines) if lines else "Could not categorize the ingredients."
+
+    except Exception as exc:
+        return f"Error checking pantry: {exc!r}"
+
+
 # ── Public API ───────────────────────────────────────────────────────────────
 
 def get_cooking_tools() -> List[Tool]:
@@ -219,9 +370,33 @@ def get_nutrition_tools() -> List[Tool]:
     ]
 
 
+def get_grocery_tools() -> List[Tool]:
+    """Tools for the Grocery agent: shopping list + pantry check."""
+    return [
+        Tool(
+            name="shopping_list_builder",
+            func=_tool_shopping_list_builder,
+            description=(
+                "Build a grocery shopping list from recipe ingredients, grouped by "
+                "store aisle. Input: JSON string with 'ingredients' (list of recipe "
+                "ingredient strings) and optional 'servings'."
+            ),
+        ),
+        Tool(
+            name="pantry_checker",
+            func=_tool_pantry_checker,
+            description=(
+                "Check which ingredients are common pantry staples the user likely "
+                "already has vs. items they need to buy. Input: JSON string with "
+                "'ingredients' (list of ingredient strings)."
+            ),
+        ),
+    ]
+
+
 def get_tools() -> List[Tool]:
     """All tools combined (backward compatibility)."""
-    return get_cooking_tools() + get_nutrition_tools()
+    return get_cooking_tools() + get_nutrition_tools() + get_grocery_tools()
 
 
-__all__ = ["get_tools", "get_cooking_tools", "get_nutrition_tools"]
+__all__ = ["get_tools", "get_cooking_tools", "get_nutrition_tools", "get_grocery_tools"]

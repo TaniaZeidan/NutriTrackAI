@@ -1,13 +1,15 @@
 """Multi-agent orchestration using LangGraph.
 
 Graph topology:
-    START -> router -> [route_by_type] -> cooking_agent <-> cooking_tools -> END
+    START -> router -> [route_by_type] -> cooking_agent   <-> cooking_tools   -> END
                                        -> nutrition_agent <-> nutrition_tools -> END
+                                       -> grocery_agent   <-> grocery_tools   -> END
 
-Three agent roles:
-    1. Router       – classifies queries via Structured Output Mode (Pydantic)
-    2. CookingAgent – recipes, ingredients, cooking instructions
+Four agent roles:
+    1. Router         – classifies queries via Structured Output Mode (Pydantic)
+    2. CookingAgent   – recipes, ingredients, cooking instructions
     3. NutritionAgent – calorie targets, macros, meal planning
+    4. GroceryAgent   – shopping lists from recipe ingredients, pantry checks
 """
 from __future__ import annotations
 
@@ -31,8 +33,9 @@ from core.prompts import (
     ROUTER_PROMPT,
     COOKING_AGENT_PROMPT,
     NUTRITION_AGENT_PROMPT,
+    GROCERY_AGENT_PROMPT,
 )
-from tools.tool_registry import get_cooking_tools, get_nutrition_tools
+from tools.tool_registry import get_cooking_tools, get_nutrition_tools, get_grocery_tools
 
 
 CONFIDENCE_THRESHOLD = 0.5
@@ -98,6 +101,23 @@ def nutrition_agent_node(state: NutriTrackState) -> dict:
     }
 
 
+def grocery_agent_node(state: NutriTrackState) -> dict:
+    """Invoke the grocery specialist LLM with grocery tools."""
+    grocery_tools = get_grocery_tools()
+    llm = _make_llm().bind_tools(grocery_tools)
+    messages = [
+        SystemMessage(content=GROCERY_AGENT_PROMPT),
+        *state.messages,
+    ]
+    response = llm.invoke(messages)
+    return {
+        "messages": [response],
+        "tool_calls_count": state.tool_calls_count + (
+            len(response.tool_calls) if hasattr(response, "tool_calls") and response.tool_calls else 0
+        ),
+    }
+
+
 # ── Conditional routing ──────────────────────────────────────────────────────
 
 def route_by_type(state: NutriTrackState) -> str:
@@ -110,6 +130,8 @@ def route_by_type(state: NutriTrackState) -> str:
         return "cooking_agent"
     if state.query_type == "nutrition":
         return "nutrition_agent"
+    if state.query_type == "grocery":
+        return "grocery_agent"
     return "cooking_agent"
 
 
@@ -119,6 +141,7 @@ def build_graph():
     """Construct and compile the multi-agent LangGraph."""
     cooking_tools = get_cooking_tools()
     nutrition_tools = get_nutrition_tools()
+    grocery_tools = get_grocery_tools()
 
     builder = StateGraph(NutriTrackState)
 
@@ -127,12 +150,18 @@ def build_graph():
     builder.add_node("cooking_tools", ToolNode(cooking_tools))
     builder.add_node("nutrition_agent", nutrition_agent_node)
     builder.add_node("nutrition_tools", ToolNode(nutrition_tools))
+    builder.add_node("grocery_agent", grocery_agent_node)
+    builder.add_node("grocery_tools", ToolNode(grocery_tools))
 
     builder.add_edge(START, "router")
     builder.add_conditional_edges(
         "router",
         route_by_type,
-        {"cooking_agent": "cooking_agent", "nutrition_agent": "nutrition_agent"},
+        {
+            "cooking_agent": "cooking_agent",
+            "nutrition_agent": "nutrition_agent",
+            "grocery_agent": "grocery_agent",
+        },
     )
 
     builder.add_conditional_edges(
@@ -148,6 +177,13 @@ def build_graph():
         {"tools": "nutrition_tools", END: END},
     )
     builder.add_edge("nutrition_tools", "nutrition_agent")
+
+    builder.add_conditional_edges(
+        "grocery_agent",
+        tools_condition,
+        {"tools": "grocery_tools", END: END},
+    )
+    builder.add_edge("grocery_tools", "grocery_agent")
 
     return builder.compile(checkpointer=MemorySaver())
 

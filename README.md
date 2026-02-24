@@ -4,11 +4,12 @@ NutriTrackAI is a multi-page Streamlit application for logging meals, planning w
 
 ## Multi-Agent LangGraph Architecture
 
-The core of the application is a **3-agent LangGraph StateGraph** that routes user queries to the right specialist:
+The core of the application is a **4-agent LangGraph StateGraph** that routes user queries to the right specialist:
 
 ```
-START -> Router -> [route_by_type] -> CookingAgent  <-> CookingTools  -> END
+START -> Router -> [route_by_type] -> CookingAgent   <-> CookingTools   -> END
                                    -> NutritionAgent <-> NutritionTools -> END
+                                   -> GroceryAgent   <-> GroceryTools   -> END
 ```
 
 ### Agent Roles
@@ -18,6 +19,7 @@ START -> Router -> [route_by_type] -> CookingAgent  <-> CookingTools  -> END
 | **Router** | Classifies queries using Structured Output Mode (Pydantic `RouterDecision`) | None (SOM only) |
 | **Cooking Agent** | Recipes, cooking instructions, ingredient scaling | `cooking_rag`, `ingredient_weights` |
 | **Nutrition Agent** | Calorie targets, BMR/TDEE, meal planning | `macro_targets`, `meal_planner` |
+| **Grocery Agent** | Shopping lists from recipe ingredients, pantry checks | `shopping_list_builder`, `pantry_checker` |
 
 ### State Schema (Pydantic)
 
@@ -105,8 +107,8 @@ This sends a cooking query, a nutrition query, and a general query through the g
 
 | Requirement | Implementation |
 |-------------|---------------|
-| A) 3+ Agent Roles | Router, Cooking Agent, Nutrition Agent |
-| B) Different Toolsets | Cooking = {cooking_rag, ingredient_weights}, Nutrition = {macro_targets, meal_planner} |
+| A) 3+ Agent Roles | Router, Cooking Agent, Nutrition Agent, Grocery Agent |
+| B) Different Toolsets | Cooking = {cooking_rag, ingredient_weights}, Nutrition = {macro_targets, meal_planner}, Grocery = {shopping_list_builder, pantry_checker} |
 | C) Pydantic State + MemorySaver | `NutriTrackState(BaseModel)` with `MemorySaver()` checkpointer |
 | D) Structured Output Mode | Router uses `.with_structured_output(RouterDecision)` |
 | E) Non-String + Optional Fields | `float`, `int`, `bool`, `Optional[str]` fields that evolve during execution |

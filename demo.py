@@ -1,6 +1,6 @@
 """CLI demo for the NutriTrackAI multi-agent LangGraph system.
 
-Sends three queries (one per agent role) and prints the state evolution
+Sends four queries (one per agent role) and prints the state evolution
 after each step to demonstrate that all course requirements are met.
 """
 import sys
@@ -19,6 +19,8 @@ QUERIES = [
     ("COOKING query", "How do I make a high-protein chicken bowl for 2 servings?"),
     ("NUTRITION query", "I weigh 70 kg, 175 cm tall, 25 years old male, moderately active. "
      "I want to lose fat. What are my daily calorie and macro targets?"),
+    ("GROCERY query", "I'm making grilled salmon with brown rice and broccoli for 4 people. "
+     "What ingredients do I need to buy?"),
     ("GENERAL query", "Hello! What can you help me with?"),
 ]
 
@@ -72,7 +74,7 @@ def main() -> None:
         print()
 
     print(SEPARATOR)
-    print("Demo complete. All three agent roles were exercised.")
+    print("Demo complete. All four agent roles were exercised.")
     print(SEPARATOR)
 
 

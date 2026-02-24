@@ -17,8 +17,10 @@ ROUTER_PROMPT = (
     "ingredient weights/amounts, meal ideas, what to cook.\n"
     "- 'nutrition': calorie calculations, macro targets, BMR/TDEE, meal planning, "
     "diet goals (lose fat, gain muscle, maintain), daily calorie needs, weekly plans.\n"
+    "- 'grocery': shopping lists, what to buy at the store, grocery runs, "
+    "ingredients needed for a recipe, pantry checks, store aisle grouping.\n"
     "- 'general': greetings, off-topic questions, or anything that does not clearly "
-    "fit the other two categories.\n\n"
+    "fit the other categories.\n\n"
     "Classify the user's latest message into exactly one category."
 )
 
@@ -64,6 +66,21 @@ COOKING_PROMPT = (
     "information for this recipe in my database.' Do not fill in gaps with creative content."
 )
 
+GROCERY_AGENT_PROMPT = (
+    "You are NutriTrackAI's grocery specialist. You help users build shopping lists "
+    "from recipe ingredients and figure out what they actually need to buy.\n\n"
+    "RULES:\n"
+    "1. ALWAYS work with specific recipe ingredients (e.g. 'chicken breast', 'brown rice', "
+    "'olive oil'), NEVER use meal names (e.g. 'chicken bowl') as shopping list items.\n"
+    "2. Use the shopping_list_builder tool to organize ingredients by store aisle.\n"
+    "3. Use the pantry_checker tool to separate staples the user likely already has "
+    "from items they need to buy.\n"
+    "4. When the user mentions a recipe or meal, extract the individual ingredients first, "
+    "then build the shopping list from those ingredients.\n"
+    "5. Include quantities and servings when provided by the user.\n"
+    "6. Present the final list clearly in markdown, grouped by store section."
+)
+
 GROCERY_PROMPT = (
     "Aggregate ingredients from provided meals, normalize units to grams or ml, "
     "and group by aisle categories."
@@ -75,6 +92,7 @@ __all__ = [
     "ROUTER_PROMPT",
     "COOKING_AGENT_PROMPT",
     "NUTRITION_AGENT_PROMPT",
+    "GROCERY_AGENT_PROMPT",
     "MEAL_PARSE_PROMPT",
     "PLAN_PROMPT",
     "COOKING_PROMPT",
